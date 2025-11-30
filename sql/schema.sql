@@ -31,8 +31,8 @@ CREATE TABLE Address (
     address_id  INT AUTO_INCREMENT PRIMARY KEY,
     street_name VARCHAR(100) NOT NULL,
     apt_no      VARCHAR(10),
-    city        VARCHAR(10) NOT NULL,
-    state       VARCHAR(10) NOT NULL,
+    city        VARCHAR(20) NOT NULL,
+    state       VARCHAR(20) NOT NULL,
     zip         VARCHAR(10) NOT NULL
 );
 
@@ -83,7 +83,7 @@ CREATE TABLE Item (
     brand       VARCHAR(20) NOT NULL,
     `condition` VARCHAR(20) NOT NULL,
     title       VARCHAR(20) NOT NULL,
-    category_id CHAR(1) NOT NULL,
+    category_id TINYINT NOT NULL,
     color       VARCHAR(20),
     in_stock    TINYINT(1) NOT NULL DEFAULT 1
 );
@@ -146,6 +146,8 @@ CREATE TABLE `Transaction` (
     auction_id  INT NOT NULL,
     buyer_id    INT NOT NULL,
     trans_time  DATETIME NOT NULL,
+    status      VARCHAR(20) NOT NULL,
+    UNIQUE (auction_id)
     CONSTRAINT fk_trans_auction
         FOREIGN KEY (auction_id) REFERENCES Auction(auction_id),
     CONSTRAINT fk_trans_buyer
