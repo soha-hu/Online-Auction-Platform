@@ -172,7 +172,7 @@
         <!-- Left Section: Title and Text -->
         <div class="left-section">
             <h1 class="main-title">
-                Welcome to Tech Barn
+                Welcome to Tech Barn!
             </h1>
             <p class="subtitle">Technology Marketplace</p>
             <p class="description">

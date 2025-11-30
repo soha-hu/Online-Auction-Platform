@@ -42,7 +42,7 @@ CREATE TABLE `User` (
     last_name   VARCHAR(20) NOT NULL,
     created_at  DATE,
     email       VARCHAR(50) NOT NULL,
-    phone_no    VARCHAR(10),
+    phone_no    CHAR(10),
     username    VARCHAR(50) NOT NULL,
     password    VARCHAR(20) NOT NULL,
     dob         DATE,

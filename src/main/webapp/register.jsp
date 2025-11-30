@@ -29,6 +29,7 @@
     position: relative;
     overflow: hidden;
   }
+  .required { color: red; }
   
   .form-box {
     position: relative; 
@@ -203,12 +204,17 @@
         <% } %>
 
         <input type="text" id="register-first-name" name="firstName" placeholder="First Name" required class="form-input">
+        <span class="required">*</span>
         <input type="text" id="register-last-name" name="lastName" placeholder="Last Name" required class="form-input">
+        <span class="required">*</span>
         <input type="email" id="register-email" name="email" placeholder="Email" required class="form-input">
+        <span class="required">*</span>
         <input type="date" id="register-dob" name="dob" placeholder="Date of Birth" class="form-input">
         <input type="tel" id="register-phone" name="tel" placeholder="Phone" class="form-input">
         <input type="text" id="register-username" name="username" placeholder="Username" required class="form-input">
+        <span class="required">*</span>
         <input type="password" id="register-password" name="password" placeholder="Password" required class="form-input">
+        <span class="required">*</span>
         
         <button id="register-btn" class="submit-button">Register</button>
 

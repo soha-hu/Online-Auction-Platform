@@ -7,6 +7,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+import java.util.regex.Pattern;
 
 @WebServlet("/register")
 public class RegisterServlet extends HttpServlet {
@@ -21,102 +23,182 @@ public class RegisterServlet extends HttpServlet {
     protected void doPost (HttpServletRequest request, HttpServletResponse response)
         throws ServletException, IOException {
             try{
-                // Try to create the new user in the database
-                // we need the name email username password(phone dob opt address not asked for now)
-                String firstName = request.getParameter("first_name");
-                String lastName = request.getParameter("last_name");
+                // Get form parameters - note: JSP uses firstName, lastName, tel (not first_name, last_name, phone)
+                String firstName = request.getParameter("firstName");
+                String lastName = request.getParameter("lastName");
                 String email = request.getParameter("email");
                 String username = request.getParameter("username");
                 String password = request.getParameter("password");
-                String phone = request.getParameter("phone");
+                String phone = request.getParameter("tel");  // JSP uses "tel" as name
                 String dob = request.getParameter("dob");
 
                 String errorMessage = null;
 
-                if (firstName != null && lastName != null && email != null && username != null
-                    && password != null)
-                    {   
-                        //Get the database connection
-                        ApplicationDB db = new ApplicationDB();	
-                        Connection con = db.getConnection();
+                // Validate required fields
+                if (firstName == null || firstName.trim().isEmpty() ||
+                    lastName == null || lastName.trim().isEmpty() ||
+                    email == null || email.trim().isEmpty() ||
+                    username == null || username.trim().isEmpty() ||
+                    password == null || password.trim().isEmpty()) {
+                    errorMessage = "All required fields must be filled.";
+                    request.setAttribute("errorMessage", errorMessage);
+                    request.getRequestDispatcher("register.jsp").forward(request, response);
+                    return;
+                }
 
-                        String query = "Select * from user WHERE email = ?";
-                        PreparedStatement ps = con.prepareStatement(query);
+                // Validate password strength
+                if (!isPasswordStrong(password)) {
+                    errorMessage = "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character.";
+                    request.setAttribute("errorMessage", errorMessage);
+                    request.getRequestDispatcher("register.jsp").forward(request, response);
+                    return;
+                }
 
-                        ps.setString(1, email);
-                        ResultSet rs = ps.executeQuery();
+                // Validate phone number if provided
+                if (phone != null && !phone.trim().isEmpty() && !isValidPhone(phone)) {
+                    errorMessage = "Phone number must be exactly 10 digits.";
+                    request.setAttribute("errorMessage", errorMessage);
+                    request.getRequestDispatcher("register.jsp").forward(request, response);
+                    return;
+                }
 
-                        // What should we check to see if the user is already registered?
-                        // maybe if the email already exists in the database, we should not allow the user to register
-                        if (rs.next()){
-                            rs.close();
-                            ps.close();
-                            db.closeConnection(con);
-                            errorMessage = "This email is already registered to an account. Please login with that account.";
-                            request.setAttribute("errorMessage", errorMessage);
-                            request.getRequestDispatcher("register.jsp").forward(request, response);
-                            return;
-                        }
-                        else{
-                            //continue with account registration
-                            // we should also check if the username already exists in the database
+                // Validate date of birth if provided
+                if (dob != null && !dob.trim().isEmpty() && !isValidAge(dob)) {
+                    errorMessage = "You must be at least 18 years old to register.";
+                    request.setAttribute("errorMessage", errorMessage);
+                    request.getRequestDispatcher("register.jsp").forward(request, response);
+                    return;
+                }
 
-                            query = "Select * from user WHERE username = ?";
-                            ps = con.prepareStatement(query);
-    
-                            ps.setString(1, username);
-                            rs = ps.executeQuery();
+                //Get the database connection
+                ApplicationDB db = new ApplicationDB();	
+                Connection con = db.getConnection();
 
-                            if (rs.next()){
-                                rs.close();
-                                ps.close();
-                                db.closeConnection(con);
-                                errorMessage = "This username is already taken. Please try a different username.";
-                                request.setAttribute("errorMessage", errorMessage);
-                                request.getRequestDispatcher("register.jsp").forward(request, response);
-                                return;
-                            }
-                            else{
-                                //create the user
-                                LocalDate currentDate = LocalDate.now();
-                                //or should I do Date currentDate = Date.now(); to make it irrelevant of timezone
+                // Check if email already exists
+                String query = "Select * from user WHERE email = ?";
+                PreparedStatement ps = con.prepareStatement(query);
+                ps.setString(1, email);
+                ResultSet rs = ps.executeQuery();
 
-                                query = "INSERT INTO `User` (first_name, last_name, created_at, email, phone_no, username, password, dob, address_id, isBuyer, isSeller, rating) VALUE
-                                (?,?,?,?,?,?,?,?,Null,1,0,Null);"
-                                
-                                ps = con.prepareStatement(query);
-        
-                                ps.setString(1, firstName);
-                                ps.setString(2, lastName);
-                                ps.setString(3, currentDate);
-                                ps.setString(4, email);
-                                ps.setString(5, phone);
-                                ps.setString(6, username);
-                                ps.setString(7, password);
-                                ps.setString(8, dob);                                
-                                ps.executeQuery();
+                if (rs.next()){
+                    rs.close();
+                    ps.close();
+                    db.closeConnection(con);
+                    errorMessage = "This email is already registered to an account. Please login with that account.";
+                    request.setAttribute("errorMessage", errorMessage);
+                    request.getRequestDispatcher("register.jsp").forward(request, response);
+                    return;
+                }
+                rs.close();
+                ps.close();
 
-                                rs.close();
-                                ps.close();
-                                db.closeConnection(con);
-                                
-                                response.sendRedirect("login.jsp");
-                                return;
-                            }
+                // Check if username already exists
+                query = "Select * from user WHERE username = ?";
+                ps = con.prepareStatement(query);
+                ps.setString(1, username);
+                rs = ps.executeQuery();
 
-                        }
+                if (rs.next()){
+                    rs.close();
+                    ps.close();
+                    db.closeConnection(con);
+                    errorMessage = "This username is already taken. Please try a different username.";
+                    request.setAttribute("errorMessage", errorMessage);
+                    request.getRequestDispatcher("register.jsp").forward(request, response);
+                    return;
+                }
+                rs.close();
+                ps.close();
+
+                // Create the user
+                LocalDate currentDate = LocalDate.now();
+                java.sql.Date sqlDate = java.sql.Date.valueOf(currentDate);
+                
+                query = "INSERT INTO `User` (first_name, last_name, created_at, email, phone_no, username, password, dob, address_id, isBuyer, isSeller, rating) VALUES (?,?,?,?,?,?,?,?,NULL,1,0,NULL)";
+                
+                ps = con.prepareStatement(query);
+                ps.setString(1, firstName.trim());
+                ps.setString(2, lastName.trim());
+                ps.setDate(3, sqlDate);
+                ps.setString(4, email.trim());
+                ps.setString(5, (phone != null && !phone.trim().isEmpty()) ? phone.trim() : null);
+                ps.setString(6, username.trim());
+                ps.setString(7, password); // TODO: Hash password before storing
+                
+                // Parse and set date of birth
+                if (dob != null && !dob.trim().isEmpty()) {
+                    try {
+                        LocalDate dobDate = LocalDate.parse(dob);
+                        ps.setDate(8, java.sql.Date.valueOf(dobDate));
+                    } catch (DateTimeParseException e) {
+                        ps.setDate(8, null);
                     }
+                } else {
+                    ps.setDate(8, null);
+                }
+                
+                int rowsAffected = ps.executeUpdate(); // Use executeUpdate for INSERT
 
-                //in register.jsp    
-                // we should also check if the password is strong enough (at least 8 characters, one uppercase, one lowercase, one number, one special character)
-                // we should also check if the phone number is valid (10 digits, only numbers)
-                // we should also check if the date of birth is valid (must be at least 18 years old)
+                if (rowsAffected > 0) {
+                    ps.close();
+                    db.closeConnection(con);
+                    response.sendRedirect("login.jsp");
+                    return;
+                } else {
+                    ps.close();
+                    db.closeConnection(con);
+                    errorMessage = "Registration failed. Please try again.";
+                    request.setAttribute("errorMessage", errorMessage);
+                    request.getRequestDispatcher("register.jsp").forward(request, response);
+                    return;
+                }
 
             }
             catch (Exception e) {
                 e.printStackTrace();
-                request.setAttribute("errorMessage", "Connection failed: " + e.getMessage());
+                request.setAttribute("errorMessage", "Registration failed: " + e.getMessage());
                 request.getRequestDispatcher("register.jsp").forward(request, response);
+        }
+    }
+
+    /**
+     * Validates password strength: at least 8 characters, one uppercase, 
+     * one lowercase, one number, one special character
+     */
+    private boolean isPasswordStrong(String password) {
+        if (password == null || password.length() < 8) {
+            return false;
+        }
+        boolean hasUpper = Pattern.compile("[A-Z]").matcher(password).find();
+        boolean hasLower = Pattern.compile("[a-z]").matcher(password).find();
+        boolean hasDigit = Pattern.compile("[0-9]").matcher(password).find();
+        boolean hasSpecial = Pattern.compile("[^a-zA-Z0-9]").matcher(password).find();
+        return hasUpper && hasLower && hasDigit && hasSpecial;
+    }
+
+    /**
+     * Validates phone number: exactly 10 digits
+     */
+    private boolean isValidPhone(String phone) {
+        if (phone == null) return false;
+        String digitsOnly = phone.replaceAll("[^0-9]", "");
+        return digitsOnly.length() == 10;
+    }
+
+    /**
+     * Validates age: must be at least 18 years old
+     */
+    private boolean isValidAge(String dob) {
+        if (dob == null || dob.trim().isEmpty()) {
+            return true; // Optional field, so return true if not provided
+        }
+        try {
+            LocalDate birthDate = LocalDate.parse(dob);
+            LocalDate todayDate = LocalDate.now();
+            LocalDate minAgeDate = todayDate.minusYears(18);
+            return birthDate.isBefore(minAgeDate) || birthDate.isEqual(minAgeDate);
+        } catch (DateTimeParseException e) {
+            return false;
         }
     }
 }
