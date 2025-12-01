@@ -10,7 +10,7 @@ public class ApplicationDB {
 		
 	}
 
-	public Connection getConnection() throws SQLException {
+	public static Connection getConnection() throws SQLException {
 		
 		//Create a connection string with proper encoding
 		String connectionUrl = "jdbc:mysql://localhost:3306/tech_barn"
@@ -20,7 +20,7 @@ public class ApplicationDB {
 		
 		try {
 			//Load JDBC driver - the interface standardizing the connection procedure. Look at WEB-INF\lib for a mysql connector jar file, otherwise it fails.
-			Class.forName("com.mysql.jdbc.Driver");
+			Class.forName("com.mysql.cj.jdbc.Driver");
 		} catch (ClassNotFoundException e) {
 			throw new SQLException("MySQL Driver not found.", e);
 		}
@@ -39,7 +39,7 @@ public class ApplicationDB {
 		
 	}
 	
-	public void closeConnection(Connection connection) throws SQLException {
+	public static void closeConnection(Connection connection) throws SQLException {
 		if (connection != null) {
 			try {
 				connection.close();
