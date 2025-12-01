@@ -1,10 +1,7 @@
-.vscode
-.DS_Store
+sql/
+build/
 target/
 *.class
-*.jar
-*.war
-*.ear
-.classpath
-.project
 .settings/
+.project
+.classpath
