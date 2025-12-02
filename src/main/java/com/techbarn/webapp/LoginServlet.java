@@ -40,7 +40,8 @@ public class LoginServlet extends HttpServlet {
                 if (username != null && password != null){
 
                     //Get the database connection
-                    Connection con = ApplicationDB.getConnection();
+                    ApplicationDB db = new ApplicationDB();	
+                    Connection con = db.getConnection();
 
                     String query = "Select * from user WHERE username = ? AND password = ?";
                     PreparedStatement ps = con.prepareStatement(query);
@@ -57,7 +58,7 @@ public class LoginServlet extends HttpServlet {
                         
                         rs.close();
                         ps.close();
-                        ApplicationDB.closeConnection(con);
+                        db.closeConnection(con);
                         
                         response.sendRedirect("welcome.jsp");
                         return;
@@ -66,7 +67,7 @@ public class LoginServlet extends HttpServlet {
                     else{
                         rs.close();
                         ps.close();
-                        ApplicationDB.closeConnection(con);
+                        db.closeConnection(con);
                         errorMessage = "Invalid username or password";
                         request.setAttribute("errorMessage", errorMessage);
                         request.getRequestDispatcher("login.jsp").forward(request, response);
