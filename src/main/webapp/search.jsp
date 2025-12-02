@@ -26,7 +26,7 @@
         }
         .category-hero {
             width: 100%;
-            height: 200px;
+            height: 260px;
             /*background: #334b31*/
             background-image: url('./Images/aurora-borealis.jpg'); 
             background-size: cover;
@@ -34,27 +34,43 @@
             display: flex;
             justify-content: left;
             align-items: center;
+            position: relative;
+        }
+
+        .category-hero::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(0,0,0,0.45), rgba(0,0,0,0.15));
+        }
+
+        .category-hero form {
+            width: 100%;
+            display: flex;
+            /*justify-content: center;*/
+            padding: 0 40px;
+            z-index: 1;
         }
 
         /* CSS for search bar */
         .search {
             --padding: 14px;
             margin-left: 290px; /*filter + filter-margin + 10px*/
-            width: max-content;
+            width: 100%;
+            max-width: 800px;
             display: flex;
             align-items: center;
             padding: var(--padding);
-            border-radius: 28px;
-            background: #f6f6f6;
-            width: 800px;
-            /*transition: background 0.25s;*/
+            border-radius: 999px;
+            background: rgba(255,255,255,0.9);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
         }
         .search:focus-within{
             box-shadow: 0 0 2px rgba(0,0,0,0.75);
 
         }
         .search-input {
-            font-size: 28px;
+            font-size: 20px;
             font-family: 'Lexend', sans-serif;
             margin-left: var(--padding);
             outline: none;
@@ -65,70 +81,151 @@
 
         .search-input::placeholder,
         .search-icon {
-            color: rgba(255, 0, 0, 0.5);
-        }
-        /* CSS for the filters sidebar */
-        .filter-container{
-            display: block;
-            width: 250px;
-            margin: 20px 0px 0px 20px; /*top right bottom left*/
-        }
-        .filters {
-            background: #eeeeee;
-            border-radius: 12px;
-            padding: 20px 18px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
-            font-size: 14px;
-            
+            color: rgba(0, 0, 0, 0.45);
         }
 
-        .filters h3 {
-            margin-bottom: 16px;
-            font-size: 18px;
+        .search-layout {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 24px;
+            padding: 24px 40px 40px;
+            background: #f5f7fb;
+        }
+
+        /* CSS for the filters sidebar */
+        .filter-container {
+            display: block;
+            width: 250px;
+            margin: 12px 0 0 20px; /* top right bottom left */
+        }
+
+        .filters {
+            background: linear-gradient(145deg, #ffffff, #f3f4f8);
+            border-radius: 16px;
+            padding: 18px 18px 20px;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+            font-size: 14px;
+            border: 1px solid #e5e7eb;
+            position: sticky;
+            top: 96px;
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
+        }
+
+        .filters::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .filters::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .filters::-webkit-scrollbar-thumb {
+            background: rgba(148, 163, 184, 0.7);
+            border-radius: 999px;
+        }
+
+        .filters-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+
+        .filters-header-title {
+            font-size: 16px;
             font-weight: 700;
-            color: #333;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+            color: #111827;
+        }
+
+        .filters-header-subtitle {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #6b7280;
         }
 
         .filter-group {
-            margin-bottom: 20px;
-            display: block;
+            margin-bottom: 18px;
+            padding-top: 10px;
+            border-top: 1px solid #e5e7eb;
         }
 
         .filter-title {
             display: block;
             font-weight: 600;
             margin-bottom: 10px;
-            color: #444;
+            color: #111827;
+            font-size: 13px;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
         }
 
         /* “Pill” style checkboxes */
         .filter-pill {
-            display: block; /*inline-flex*/
+            display: flex;
             align-items: center;
             gap: 6px;
             margin: 4px 6px 4px 0;
             padding: 6px 10px;
             border-radius: 999px;
             border: 1px solid #d1d5db;
-            cursor: crosshair; /*pointer;*/
+            cursor: pointer;
             user-select: none;
             font-size: 13px;
+            background: #ffffff;
+            transition: background 0.15s, border-color 0.15s, box-shadow 0.15s, transform 0.1s;
+        }
+
+        .filter-pill:hover {
+            background: #eef2ff;
+            border-color: #818cf8;
+            box-shadow: 0 1px 4px rgba(15, 23, 42, 0.16);
+            transform: translateY(-1px);
         }
 
         .filter-pill input[type="checkbox"] {
-            accent-color: #6b9080;
+            accent-color: #4f46e5;
+        }
+
+        .filter-pill input[type="checkbox"]:checked ~ span {
+            color: #111827;
+            font-weight: 600;
+        }
+
+        .filter-pill-active {
+            background: #eef2ff;
+            border-color: #4f46e5;
         }
 
         .apply-button {
-            margin-top: 8px;
+            margin-top: 10px;
             width: 100%;
-            padding: 8px 0;
+            padding: 9px 0;
             border: none;
             border-radius: 999px;
-            background: #6b9080;
+            background: linear-gradient(135deg, #4f46e5, #6366f1);
             color: #fff;
             font-weight: 600;
             cursor: pointer;
+            font-size: 13px;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            box-shadow: 0 8px 20px rgba(79, 70, 229, 0.35);
+            transition: transform 0.1s ease, box-shadow 0.1s ease, filter 0.1s ease;
+        }
+
+        .apply-button:hover {
+            filter: brightness(1.05);
+            transform: translateY(-1px);
+            box-shadow: 0 12px 28px rgba(79, 70, 229, 0.45);
+        }
+
+        .apply-button:active {
+            transform: translateY(0);
+            box-shadow: 0 6px 18px rgba(79, 70, 229, 0.35);
         }
 
         /* CSS for the search results grid (same as category.jsp) */
@@ -141,10 +238,16 @@
 
         .item-card {
             background: #fff;
-            padding: 15px;
-            border-radius: 10px;
-            text-align: center;
-            box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+            padding: 16px;
+            border-radius: 12px;
+            text-align: left;
+            box-shadow: 0 8px 24px rgba(15,23,42,0.08);
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .item-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 14px 35px rgba(15,23,42,0.14);
         }
         .card-phone img {
             height: 180px;
@@ -199,12 +302,17 @@
     </div>
     <div class ="search-layout">
         <!-- Sidebar (left)-->
-         <aside class="filter-container">
+        <aside class="filter-container">
             <form method="get" action="search">
                 <div class="filters">
+                    <div class="filters-header">
+                        <span class="filters-header-title">Filters</span>
+                        <span class="filters-header-subtitle">Refine results</span>
+                    </div>
+
                     <div class="filter-group">
                         <!-- dynamically loop through and render the properties as h4? -->
-                        <span class="filter-title">Condition: </span>
+                        <span class="filter-title">Condition</span>
                         <label class="filter-pill">
                              <!-- dynamically render the possible values for each property as h6? -->
                             <input type="checkbox" name="condition" value="New">
