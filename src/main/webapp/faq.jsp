@@ -16,7 +16,10 @@
             height: 100%;
             width: 100%;
             overflow-x: hidden;
-            background: #ffffff;
+            /*background: #ffffff;*/
+            background-image: url('Images/green-question-banner.png');
+            background-size: cover;
+            background-position: center;
         }
 
         .faq-container { 
@@ -395,6 +398,7 @@
     </style>
 </head>
 <body>
+<%@ include file="navbar.jsp" %>
 <% 
     // Declare role once at the top
     String role = (String) session.getAttribute("role");

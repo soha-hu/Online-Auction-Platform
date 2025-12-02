@@ -33,23 +33,28 @@ public class CategoryServlet extends HttpServlet{
 
                 String pageTitle;
                 String bannerImage;
+                String cardStyle;
 
                 switch (categoryId) {
                     case 1:
                         pageTitle = "Phones";
                         bannerImage = "Images/phone-banner.png";
+                        cardStyle = "card-phone";
                         break;
                     case 2:
                         pageTitle = "TVs";
                         bannerImage = "Images/tv_banner.jpg";
+                        cardStyle = "card-tv";
                         break;
                     case 3:
                         pageTitle = "Headphones";
                         bannerImage = "Images/headphones_banner.jpeg";
+                        cardStyle = "card-headphones";
                         break;
                     default:
                         pageTitle = "Phones";
                         bannerImage = "Images/phone-banner.png";
+                        cardStyle = "card-phone";
                         break;
                 }
 
@@ -98,6 +103,7 @@ public class CategoryServlet extends HttpServlet{
                 request.setAttribute("pageTitle", pageTitle);
                 request.setAttribute("bannerImage", bannerImage);
                 request.setAttribute("items", items);
+                request.setAttribute ("cardStyle", cardStyle);
                 request.getRequestDispatcher("category.jsp").forward(request, response);
             }
             catch(Exception e) {

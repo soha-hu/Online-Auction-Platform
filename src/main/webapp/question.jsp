@@ -32,6 +32,7 @@
     </style>
 </head>
 <body>
+<%@ include file="navbar.jsp" %>
 <div class="container">
     <% 
         Question question = (Question) request.getAttribute("question");

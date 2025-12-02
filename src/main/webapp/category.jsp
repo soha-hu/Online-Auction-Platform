@@ -54,6 +54,17 @@
             text-align: center;
             box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
         }
+        .card-phone img {
+            height: 180px;
+        }
+
+        .card-tv img {
+            height: 220px;
+        }
+
+        .card-headphones img {
+            height: 180px;
+        }
 
         .item-card img {
             width: 100%;
@@ -97,7 +108,7 @@
             if (items != null && !items.isEmpty()) {
                 for (ItemBean item : items) {
         %>
-        <div class="item-card">
+        <div class="item-card"> <!--${cardClass}-->
             <a href="item?itemId=<%= item.getId() %>">
                 <img src="<%= item.getImagePath() %>" alt="<%= item.getName() %>">
                 <p><%= item.getName() %></p>
