@@ -366,7 +366,7 @@
     <div class="category-hero">
             <div class="search">
                 <span class="search-icon material-symbols-outlined">search</span>
-                <input class = "search-input" type="search" placeholder="Search our inventory..."></input>
+                <input class = "search-input" type="search" placeholder="Search our inventory..." name="searchbar"></input>
             </div>
     </div>
     <div class ="search-layout">

@@ -1,18 +1,22 @@
 <style>
     /* Header Styles */
-    .header {
+    header.header {
         background: rgba(255, 255, 255, 0.95);
         padding: 1rem 2rem;
         box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         position: sticky;
         top: 0;
         z-index: 100;
+        width: 100%;
+        box-sizing: border-box;
     }
 
     .navbar {
         display: flex;
         align-items: center;
         justify-content: space-between;
+        width: 100%;
+        max-width: 100%;
     }
 
     .company-logo {

@@ -118,7 +118,7 @@ public class SearchServlet extends HttpServlet{
 
     //             /* gets all the checkboxes that are selected per category from the form, as well as any search input */
     //             /* returns values based on that search */
-    //             String searchValue = request.getParameter("search");
+    //             String searchValue = request.getParameter("searchbar");
     //             //String [] keywords = searchValue.split ("");
     //             String[] keywords = new String[0];
     //             if (searchValue != null && !searchValue.trim().isEmpty()) {

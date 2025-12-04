@@ -26,10 +26,10 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-image: url('Images/gradient-question-banner.png');
+            background-image: url('Images/question_banner.jpg');
             background-size: cover;
             background-position: center;
-            opacity: 0.8;
+            opacity: 0.9;
             z-index: -1;
         }
 
@@ -38,17 +38,20 @@
             margin: 0 auto; 
             padding: 40px 20px; 
             position: relative;
-            background-color: hwb(0 100% 0% / 0.9);
+            background-color: hwb(0 100% 0% / 0.92);
             border-radius: 10px ;
+            
         }
         
-        .header { 
+        .faq-container .faq-header { 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
             margin-bottom: 40px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid #f0f0f0;
+            padding: 25px 30px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
         
         h1 { 
@@ -76,7 +79,7 @@
         .search-section { 
             margin: 30px 0; 
             padding: 25px; 
-            background: #f8f9fa; 
+            background: #f8f9fa9a; 
             border-radius: 12px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
@@ -138,7 +141,9 @@
         .ask-section { 
             margin: 30px 0; 
             padding: 30px; 
-            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            /*background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);*/
+            background: linear-gradient(135deg,rgba(232, 245, 233, 0.85) 0%,
+            rgba(200, 230, 201, 0.85) 100%);
             border-radius: 12px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
@@ -265,12 +270,14 @@
         }
         
         .question-card.answered { 
-            background: linear-gradient(135deg, #f1f8f4 0%, #e8f5e9 100%);
+            /*background: linear-gradient(135deg, #f1f8f4 0%, #e8f5e9 100%);*/
+            background: linear-gradient(135deg,rgba(241, 248, 244, 0.85) 0%,   /* #f1f8f4 at 70% opacity */rgba(232, 245, 233, 0.85) 100%  /* #e8f5e9 at 70% opacity */);
             border-color: #81c784; 
         }
         
         .question-card.unanswered { 
-            background: linear-gradient(135deg, #fffef7 0%, #fff9e6 100%);
+            /*background: linear-gradient(135deg, #fffef7 0%, #fff9e6 100%);*/
+            background: linear-gradient(135deg,rgba(255, 254, 247, 0.85) 0%,rgba(255, 249, 230, 0.85) 100%);
             border-color: #ffb74d; 
         }
         
@@ -421,7 +428,7 @@
 %>
 <div class ="page-container">
 <div class="faq-container">
-    <div class="header">
+    <div class="faq-header">
         <h1>FAQ / Customer Questions</h1>
         <% if (isRepOrAdmin) { %>
             <a href="<%=request.getContextPath()%>/<%="rep".equals(role) ? "custrep" : "admin"%>" class="dashboard-btn">
