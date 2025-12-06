@@ -84,7 +84,7 @@ CREATE TABLE `Admin` (
   `first_name` varchar(20) NOT NULL,
   `last_name` varchar(20) NOT NULL,
   `username` varchar(50) NOT NULL,
-  `salary` int DEFAULT NULL,
+  `salary` decimal(10,2) DEFAULT NULL,
   `password` varchar(20) NOT NULL,
   `email` varchar(50) NOT NULL,
   `phone_no` char(10) DEFAULT NULL,
@@ -98,7 +98,7 @@ CREATE TABLE `Admin` (
 
 LOCK TABLES `Admin` WRITE;
 /*!40000 ALTER TABLE `Admin` DISABLE KEYS */;
-INSERT INTO `Admin` VALUES (1,'Michael','Scott','admin',100000,'password','michaelscott@theoffice.com','1234567890');
+INSERT INTO `Admin` VALUES (1,'Michael','Scott','admin',100000.00,'password','michaelscott@theoffice.com','1234567890');
 /*!40000 ALTER TABLE `Admin` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -254,7 +254,7 @@ CREATE TABLE `Cust_Rep` (
   `first_name` varchar(20) NOT NULL,
   `last_name` varchar(20) NOT NULL,
   `username` varchar(50) NOT NULL,
-  `salary` int DEFAULT NULL,
+  `salary` decimal(10,2) DEFAULT NULL,
   `password` varchar(20) NOT NULL,
   `email` varchar(50) NOT NULL,
   `phone_no` char(10) DEFAULT NULL,
@@ -272,7 +272,7 @@ CREATE TABLE `Cust_Rep` (
 
 LOCK TABLES `Cust_Rep` WRITE;
 /*!40000 ALTER TABLE `Cust_Rep` DISABLE KEYS */;
-INSERT INTO `Cust_Rep` VALUES (1,'Jim','Halpert','jimHalpert',60000,'ilovepam','jimhalpert@theoffice.com','2353467890','Northeast',1),(2,'Pam','Beesly','pamBeesly',55000,'ilovejim','pambeesly@theoffice.com','3454567890','Northeast',1),(3,'Dwight','Schrute','dwightSchrute',65000,'bearsBears','dwightSchrute@theoffice.com','4565678901','Northeast',1);
+INSERT INTO `Cust_Rep` VALUES (1,'Jim','Halpert','jimHalpert',60000.00,'ilovepam','jimhalpert@theoffice.com','2353467890','Northeast',1),(2,'Pam','Beesly','pamBeesly',55000.00,'ilovejim','pambeesly@theoffice.com','3454567890','Northeast',1),(3,'Dwight','Schrute','dwightSchrute',65000.00,'bearsBears','dwightSchrute@theoffice.com','4565678901','Northeast',1);
 /*!40000 ALTER TABLE `Cust_Rep` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -348,7 +348,7 @@ CREATE TABLE `Phone` (
   `os` varchar(10) NOT NULL,
   `storage_gb` int NOT NULL,
   `ram_gb` int NOT NULL,
-  `phone_screen_size` float NOT NULL,
+  `phone_screen_size` decimal(3,2) NOT NULL,
   `rear_camera_mp` int NOT NULL,
   `front_camera_mp` int NOT NULL,
   `isUnlocked` tinyint(1) NOT NULL DEFAULT '0',
@@ -365,7 +365,7 @@ CREATE TABLE `Phone` (
 
 LOCK TABLES `Phone` WRITE;
 /*!40000 ALTER TABLE `Phone` DISABLE KEYS */;
-INSERT INTO `Phone` VALUES (1,'iOS',256,8,6.1,48,12,1,23,1),(2,'iOS',128,6,6.1,12,12,0,20,0),(3,'Android',512,12,6.8,200,12,1,25,1),(4,'Android',256,8,6.1,50,12,0,22,0),(5,'Android',128,12,6.7,50,11,1,24,1),(6,'Android',128,8,6.3,50,11,1,24,0),(7,'Android',256,16,6.82,50,32,1,27,1),(8,'Android',256,16,6.7,50,16,1,25,1),(9,'iOS',128,4,6.1,12,12,0,19,0),(10,'Android',128,8,6.1,50,10,0,23,0);
+INSERT INTO `Phone` VALUES (1,'iOS',256,8,6.10,48,12,1,23,1),(2,'iOS',128,6,6.10,12,12,0,20,0),(3,'Android',512,12,6.80,200,12,1,25,1),(4,'Android',256,8,6.10,50,12,0,22,0),(5,'Android',128,12,6.70,50,11,1,24,1),(6,'Android',128,8,6.30,50,11,1,24,0),(7,'Android',256,16,6.82,50,32,1,27,1),(8,'Android',256,16,6.70,50,16,1,25,1),(9,'iOS',128,4,6.10,12,12,0,19,0),(10,'Android',128,8,6.10,50,10,0,23,0);
 /*!40000 ALTER TABLE `Phone` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -484,7 +484,7 @@ CREATE TABLE `User` (
   `address_id` int DEFAULT NULL,
   `isBuyer` tinyint(1) NOT NULL DEFAULT '0',
   `isSeller` tinyint(1) NOT NULL DEFAULT '0',
-  `rating` float DEFAULT NULL,
+  `rating` decimal(3,2) DEFAULT NULL,
   PRIMARY KEY (`user_id`),
   KEY `fk_user_address` (`address_id`),
   CONSTRAINT `fk_user_address` FOREIGN KEY (`address_id`) REFERENCES `Address` (`address_id`)
@@ -497,7 +497,7 @@ CREATE TABLE `User` (
 
 LOCK TABLES `User` WRITE;
 /*!40000 ALTER TABLE `User` DISABLE KEYS */;
-INSERT INTO `User` VALUES (1,'Alex','Martinez','2024-01-15','alex.martinez@email.com','5551001','amartinez','pass123','1990-05-20',1,1,1,4.8),(2,'Taylor','Garcia','2024-02-01','taylor.garcia@email.com','5551002','tgarcia','pass456','1988-09-12',2,1,0,NULL),(3,'Jordan','Rodriguez','2024-02-10','jordan.rodriguez@email.com','5551003','jrodriguez','pass789','1992-11-30',3,1,1,NULL),(4,'Casey','Lewis','2024-02-15','casey.lewis@email.com','5551004','clewis','pass321','1995-03-18',4,1,0,NULL),(5,'Morgan','Walker','2024-02-20','morgan.walker@email.com','5551005','mwalker','pass654','1987-07-25',5,1,1,3.2),(6,'Riley','Hall','2024-03-01','riley.hall@email.com','5551006','rhall','pass987','1993-12-05',6,1,0,NULL),(7,'Avery','Allen','2024-03-05','avery.allen@email.com','5551007','aallen','pass147','1991-04-22',7,1,1,4.8),(8,'Quinn','Young','2024-03-10','quinn.young@email.com','5551008','qyoung','pass258','1994-08-14',8,1,0,NULL),(9,'Cameron','King','2024-03-15','cameron.king@email.com','5551009','cking','pass369','1989-06-28',9,1,1,5),(10,'Dakota','Wright','2024-03-20','dakota.wright@email.com','5551010','dwright','pass741','1996-01-10',10,1,0,NULL),(11,'Sage','Lopez','2024-03-25','sage.lopez@email.com','5551011','slopez','pass852','1990-10-03',11,1,1,2.5),(12,'Blake','Hill','2024-04-01','blake.hill@email.com','5551012','bhill','pass963','1992-02-17',12,1,0,NULL),(13,'River','Scott','2024-04-05','river.scott@email.com','5551013','rscott','pass159','1988-09-21',13,1,1,4.6),(14,'Phoenix','Green','2024-04-10','phoenix.green@email.com','5551014','pgreen','pass357','1993-05-08',14,1,0,NULL),(15,'Skyler','Adams','2024-04-15','skyler.adams@email.com','5551015','sadams','pass468','1991-11-15',15,1,1,4.9),(16,'Rowan','Baker','2024-04-20','rowan.baker@email.com','5551016','rbaker','pass579','1994-07-27',16,1,0,NULL),(17,'Finley','Nelson','2024-04-25','finley.nelson@email.com','5551017','fnelson','pass680','1989-03-12',17,1,1,NULL),(18,'Hayden','Carter','2024-05-01','hayden.carter@email.com','5551018','hcarter','pass791','1995-12-04',18,1,0,NULL),(19,'Reese','Mitchell','2024-05-05','reese.mitchell@email.com','5551019','rmitchell','pass802','1992-08-19',19,1,1,1.8),(20,'Jamie','Perez','2024-05-10','jamie.perez@email.com','5551020','jperez','pass913','1990-04-26',20,1,0,NULL),(21,'Parker','Roberts','2024-05-15','parker.roberts@email.com','5551021','proberts','pass124','1993-10-11',21,1,1,4.2),(22,'Avery','Turner','2024-05-20','avery.turner@email.com','5551022','aturner','pass246','1996-06-23',22,1,0,NULL),(23,'Drew','Phillips','2024-05-25','drew.phillips@email.com','5551023','dphillips','pass357','1991-02-07',23,1,1,3.9),(24,'Emery','Campbell','2024-06-01','emery.campbell@email.com','5551024','ecampbell','pass468','1988-09-30',24,1,0,NULL),(25,'Hayden','Parker','2024-06-05','hayden.parker@email.com','5551025','hparker','pass579','1994-05-14',25,1,1,NULL),(26,'Ellis','Evans','2024-06-10','ellis.evans@email.com','5551026','eevans','pass680','1992-11-28',26,1,0,NULL),(27,'Harper','Edwards','2024-06-15','harper.edwards@email.com','5551027','hedwards','pass791','1990-07-09',27,1,1,4.7),(28,'Robin','Collins','2024-06-20','robin.collins@email.com','5551028','rcollins','pass802','1995-03-22',28,1,0,NULL),(29,'Kai','Stewart','2024-06-25','kai.stewart@email.com','5551029','kstewart','pass913','1993-12-16',29,1,1,2.1),(30,'Finley','Sanchez','2024-07-01','finley.sanchez@email.com','5551030','fsanchez','pass124','1991-08-02',30,1,0,NULL),(31,'Shreya','Shukla','2025-11-30','shreyashukla@gmail.com','1235349592','shreyashukla','Soccer^2026','2003-01-01',NULL,1,0,NULL),(32,'Will','Byers','2025-12-01','willbyers@hawkins.gmail.com','0110110011','willbyers','Byler4ever<#','1983-11-06',NULL,1,0,NULL);
+INSERT INTO `User` VALUES (1,'Alex','Martinez','2024-01-15','alex.martinez@email.com','5551001','amartinez','pass123','1990-05-20',1,1,1,4.80),(2,'Taylor','Garcia','2024-02-01','taylor.garcia@email.com','5551002','tgarcia','pass456','1988-09-12',2,1,0,NULL),(3,'Jordan','Rodriguez','2024-02-10','jordan.rodriguez@email.com','5551003','jrodriguez','pass789','1992-11-30',3,1,1,NULL),(4,'Casey','Lewis','2024-02-15','casey.lewis@email.com','5551004','clewis','pass321','1995-03-18',4,1,0,NULL),(5,'Morgan','Walker','2024-02-20','morgan.walker@email.com','5551005','mwalker','pass654','1987-07-25',5,1,1,3.20),(6,'Riley','Hall','2024-03-01','riley.hall@email.com','5551006','rhall','pass987','1993-12-05',6,1,0,NULL),(7,'Avery','Allen','2024-03-05','avery.allen@email.com','5551007','aallen','pass147','1991-04-22',7,1,1,4.80),(8,'Quinn','Young','2024-03-10','quinn.young@email.com','5551008','qyoung','pass258','1994-08-14',8,1,0,NULL),(9,'Cameron','King','2024-03-15','cameron.king@email.com','5551009','cking','pass369','1989-06-28',9,1,1,5.00),(10,'Dakota','Wright','2024-03-20','dakota.wright@email.com','5551010','dwright','pass741','1996-01-10',10,1,0,NULL),(11,'Sage','Lopez','2024-03-25','sage.lopez@email.com','5551011','slopez','pass852','1990-10-03',11,1,1,2.50),(12,'Blake','Hill','2024-04-01','blake.hill@email.com','5551012','bhill','pass963','1992-02-17',12,1,0,NULL),(13,'River','Scott','2024-04-05','river.scott@email.com','5551013','rscott','pass159','1988-09-21',13,1,1,4.60),(14,'Phoenix','Green','2024-04-10','phoenix.green@email.com','5551014','pgreen','pass357','1993-05-08',14,1,0,NULL),(15,'Skyler','Adams','2024-04-15','skyler.adams@email.com','5551015','sadams','pass468','1991-11-15',15,1,1,4.90),(16,'Rowan','Baker','2024-04-20','rowan.baker@email.com','5551016','rbaker','pass579','1994-07-27',16,1,0,NULL),(17,'Finley','Nelson','2024-04-25','finley.nelson@email.com','5551017','fnelson','pass680','1989-03-12',17,1,1,NULL),(18,'Hayden','Carter','2024-05-01','hayden.carter@email.com','5551018','hcarter','pass791','1995-12-04',18,1,0,NULL),(19,'Reese','Mitchell','2024-05-05','reese.mitchell@email.com','5551019','rmitchell','pass802','1992-08-19',19,1,1,1.80),(20,'Jamie','Perez','2024-05-10','jamie.perez@email.com','5551020','jperez','pass913','1990-04-26',20,1,0,NULL),(21,'Parker','Roberts','2024-05-15','parker.roberts@email.com','5551021','proberts','pass124','1993-10-11',21,1,1,4.20),(22,'Avery','Turner','2024-05-20','avery.turner@email.com','5551022','aturner','pass246','1996-06-23',22,1,0,NULL),(23,'Drew','Phillips','2024-05-25','drew.phillips@email.com','5551023','dphillips','pass357','1991-02-07',23,1,1,3.90),(24,'Emery','Campbell','2024-06-01','emery.campbell@email.com','5551024','ecampbell','pass468','1988-09-30',24,1,0,NULL),(25,'Hayden','Parker','2024-06-05','hayden.parker@email.com','5551025','hparker','pass579','1994-05-14',25,1,1,NULL),(26,'Ellis','Evans','2024-06-10','ellis.evans@email.com','5551026','eevans','pass680','1992-11-28',26,1,0,NULL),(27,'Harper','Edwards','2024-06-15','harper.edwards@email.com','5551027','hedwards','pass791','1990-07-09',27,1,1,4.70),(28,'Robin','Collins','2024-06-20','robin.collins@email.com','5551028','rcollins','pass802','1995-03-22',28,1,0,NULL),(29,'Kai','Stewart','2024-06-25','kai.stewart@email.com','5551029','kstewart','pass913','1993-12-16',29,1,1,2.10),(30,'Finley','Sanchez','2024-07-01','finley.sanchez@email.com','5551030','fsanchez','pass124','1991-08-02',30,1,0,NULL),(31,'Shreya','Shukla','2025-11-30','shreyashukla@gmail.com','1235349592','shreyashukla','Soccer^2026','2003-01-01',NULL,1,0,NULL),(32,'Will','Byers','2025-12-01','willbyers@hawkins.gmail.com','0110110011','willbyers','Byler4ever<#','1983-11-06',NULL,1,0,NULL);
 /*!40000 ALTER TABLE `User` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -510,4 +510,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-12-04 18:24:14
+-- Dump completed on 2025-12-06 11:11:42
