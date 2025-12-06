@@ -16,41 +16,20 @@ public class SearchServlet extends HttpServlet{
             try{
                 //Get the database connection
                 Connection con = ApplicationDB.getConnection();
-
-                /* code below used to initialize the sidebar filter  */
-                /* get the list of filter categories */
-                ArrayList<String> categories = getFilterCategories();
-
-                /* get the list of values per category */
-                /* Realized I would need a dictionary */
-                HashMap<String, ArrayList<String>> categoryValues = new HashMap<>();
-
-                for (String category: categories){
-                    //gets all the data per category
-                    category = "`" + category + '`'; //because some of the column names are mysql keywords (would like to change that later)
-                    String query2 = "SELECT DISTINCT " + category + " FROM Item i " +
-                    "LEFT JOIN Phone p ON p.item_id = i.item_id " +
-                    "LEFT JOIN TV t ON t.item_id = i.item_id " +
-                    "LEFT JOIN Headphones h ON h.item_id = i.item_id " +
-                    "WHERE " + category + " IS NOT NULL;";
-
-                    PreparedStatement ps2 = con.prepareStatement(query2);
-                    ResultSet rs2 = ps2.executeQuery();
-                    ArrayList <String> values = new ArrayList<>();
-                    while (rs2.next()){
-                        values.add(rs2.getString(1));
-                    }
-                    //categoryValues.put (category, values);
-                    categoryValues.put (category, values);
-                    rs2.close();
-                    ps2.close();
-                }
-
+    
+                // Initialize filter categories and values using helper method
+                Map<String, Object> filterData = initializeFilterCategories(con);
+                
                 ApplicationDB.closeConnection(con);
-                request.setAttribute("categories", categories);
-                request.setAttribute("categoryValues", categoryValues);
-                request.getRequestDispatcher("search.jsp").forward(request, response);
 
+                // Pass categories to jsp (general first, then item-type specific categories)
+                request.setAttribute("generalCategories", filterData.get("generalCategories"));
+                request.setAttribute("phoneCategories", filterData.get("phoneCategories"));
+                request.setAttribute("tvCategories", filterData.get("tvCategories"));
+                request.setAttribute("headphonesCategories", filterData.get("headphonesCategories"));
+                request.setAttribute("categoryValues", filterData.get("categoryValues"));
+
+                request.getRequestDispatcher("search.jsp").forward(request, response);
             }
             catch(Exception e) {
                 e.printStackTrace();
@@ -58,7 +37,193 @@ public class SearchServlet extends HttpServlet{
                 request.getRequestDispatcher("search.jsp").forward(request, response);
             }
     }
+    private ArrayList<String> getFilterCategories(){
+        ArrayList<String> categories = new ArrayList<>();
+        try{
+            //Get the database connection
+            Connection con = ApplicationDB.getConnection();
 
+            /* code below used to initialize the sidebar filter  */
+            /* get the list of filter categories */
+            String query ="SELECT COLUMN_NAME "+
+            "FROM INFORMATION_SCHEMA.COLUMNS "+
+            "WHERE TABLE_SCHEMA='tech_barn' AND TABLE_NAME IN ('Item', 'Phone', 'TV', 'Headphones') "+
+            "AND COLUMN_NAME NOT IN ('item_id', 'image_path', 'title', 'description', 'in_stock') "+
+            "ORDER BY ORDINAL_POSITION";
+            PreparedStatement ps = con.prepareStatement(query);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                categories.add (rs.getString(1)); // gets the category name from column index 1 (of each row)
+            }
+            //categories.remove ("item_id");
+            rs.close();
+            ps.close();
+            ApplicationDB.closeConnection(con);
+            return(categories);
+            
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+            return(categories);
+        }
+    }
+
+    private Map<String, List<String>> getFilterColumnsByTable() {
+        Map<String, List<String>> tableColumns = new HashMap<>();
+    
+        try {
+            Connection con = ApplicationDB.getConnection();
+    
+            String query =
+                "SELECT TABLE_NAME, COLUMN_NAME, ORDINAL_POSITION " +
+                "FROM INFORMATION_SCHEMA.COLUMNS " +
+                "WHERE TABLE_SCHEMA='tech_barn' " +
+                "AND TABLE_NAME IN ('Item', 'Phone', 'TV', 'Headphones') " +
+                "AND COLUMN_NAME NOT IN ('item_id', 'image_path', 'title', 'description', 'in_stock') " +
+                "ORDER BY CASE TABLE_NAME " +
+                "   WHEN 'Item' THEN 1 " +
+                "   WHEN 'Phone' THEN 2 " +
+                "   WHEN 'TV' THEN 3 " +
+                "   WHEN 'Headphones' THEN 4 " +
+                "   ELSE 5 END, ORDINAL_POSITION";
+    
+            PreparedStatement ps = con.prepareStatement(query);
+            ResultSet rs = ps.executeQuery();
+    
+            while (rs.next()) {
+                String table = rs.getString("TABLE_NAME");
+                String col = rs.getString("COLUMN_NAME");
+    
+                tableColumns.computeIfAbsent(table, k -> new ArrayList<>()).add(col); //computeIfAbsent checks if table is already in tableColumns or it adds the key using the lambda expression
+            }
+    
+            rs.close();
+            ps.close();
+            ApplicationDB.closeConnection(con);
+    
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    
+        return tableColumns;
+    }
+
+    private Map<String, Object> initializeFilterCategories(Connection con) throws SQLException {
+        Map<String, Object> result = new HashMap<>();
+        
+        // Get the list of filter categories grouped by item type
+        Map<String, List<String>> tableColumns = getFilterColumnsByTable();
+
+        // general filters (item table)
+        List<String> generalCategories = tableColumns.getOrDefault("Item", new ArrayList<>());
+
+        // item-type specific filters
+        List<String> phoneCategories = tableColumns.getOrDefault("Phone", new ArrayList<>());
+        List<String> tvCategories = tableColumns.getOrDefault("TV", new ArrayList<>());
+        List<String> headphonesCategories = tableColumns.getOrDefault("Headphones", new ArrayList<>());
+
+        // flatten
+        List<String> allCategories = new ArrayList<>();
+        allCategories.addAll(generalCategories);
+        allCategories.addAll(phoneCategories);
+        allCategories.addAll(tvCategories);
+        allCategories.addAll(headphonesCategories);
+
+        // Get the list of values per category
+        HashMap<String, ArrayList<String>> categoryValues = new HashMap<>();
+
+        for (String category : allCategories) {
+            String column = "`" + category + "`";
+
+            String query = "SELECT DISTINCT " + column + " FROM Item i " +
+                    "LEFT JOIN Phone p ON p.item_id = i.item_id " +
+                    "LEFT JOIN TV t ON t.item_id = i.item_id " +
+                    "LEFT JOIN Headphones h ON h.item_id = i.item_id " +
+                    "WHERE " + column + " IS NOT NULL;";
+
+            PreparedStatement ps = con.prepareStatement(query);
+            ResultSet rs = ps.executeQuery();
+
+            ArrayList<String> values = new ArrayList<>();
+            while (rs.next()) {
+                values.add(rs.getString(1));
+            }
+
+            categoryValues.put(category, values);
+            rs.close();
+            ps.close();
+        }
+
+        // Store all results in the map
+        result.put("generalCategories", generalCategories);
+        result.put("phoneCategories", phoneCategories);
+        result.put("tvCategories", tvCategories);
+        result.put("headphonesCategories", headphonesCategories);
+        result.put("categoryValues", categoryValues);
+        
+        return result;
+    } //dont close the connection as we should do that in the original thread
+
+    private Map<String, List<String>> getColumnsByType() {
+        Map<String, List<String>> result = new HashMap<>();
+        List<String> stringCols = new ArrayList<>();
+        List<String> booleanCols = new ArrayList<>();
+        List<String> numericCols = new ArrayList<>();
+    
+        try {
+            Connection con = ApplicationDB.getConnection();
+    
+            String sql =
+                "SELECT COLUMN_NAME, DATA_TYPE " +
+                "FROM INFORMATION_SCHEMA.COLUMNS " +
+                "WHERE TABLE_SCHEMA='tech_barn' " +
+                "AND TABLE_NAME IN ('Item', 'Phone', 'TV', 'Headphones') " +
+                "AND COLUMN_NAME NOT IN ('item_id', 'image_path', 'in_stock')";
+    
+            PreparedStatement ps = con.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+    
+            while (rs.next()) {
+                String colName = rs.getString("COLUMN_NAME");
+                String dataType = rs.getString("DATA_TYPE").toLowerCase();
+    
+                // You can tweak these sets if you add more types later
+                if (dataType.equals("varchar") || dataType.equals("char") || dataType.contains("text")) {
+                    stringCols.add(colName);
+                } else if (dataType.equals("tinyint") || dataType.equals("bit") || dataType.equals("boolean")) {
+                    booleanCols.add(colName);
+                } else if (dataType.equals("int") || dataType.equals("bigint") ||
+                           dataType.equals("decimal") || dataType.equals("double") ||
+                           dataType.equals("float")) {
+                    numericCols.add(colName);
+                }
+            }
+    
+            rs.close();
+            ps.close();
+            ApplicationDB.closeConnection(con);
+    
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    
+        result.put("string", stringCols);
+        result.put("boolean", booleanCols);
+        result.put("numeric", numericCols);
+        return result;
+    }
+    private String normalizeKeyword(String keyword) {
+        if (keyword == null) return null;
+    
+        String k = keyword.trim().toLowerCase();
+    
+        k = k.replaceAll("(mp|hz|gb)$", "").trim();
+    
+        return k;
+    }
+    
+    //transforms the names to display in the fitler only
     public String transformName (String category){
         if (category == null || category.isEmpty()) return category;
         category = category.replaceAll("`","").replaceAll("_", " ");
@@ -95,37 +260,6 @@ public class SearchServlet extends HttpServlet{
         return category.trim(); //or should i use .strip()
     }
     
-    private ArrayList<String> getFilterCategories(){
-        ArrayList<String> categories = new ArrayList<>();
-        try{
-            //Get the database connection
-            Connection con = ApplicationDB.getConnection();
-
-            /* code below used to initialize the sidebar filter  */
-            /* get the list of filter categories */
-            String query ="SELECT COLUMN_NAME "+
-            "FROM INFORMATION_SCHEMA.COLUMNS "+
-            "WHERE TABLE_SCHEMA='tech_barn' AND TABLE_NAME IN ('Item', 'Phone', 'TV', 'Headphones') "+
-            "AND COLUMN_NAME NOT IN ('item_id', 'image_path', 'title', 'description', 'in_stock') "+
-            "ORDER BY ORDINAL_POSITION";
-            PreparedStatement ps = con.prepareStatement(query);
-            ResultSet rs = ps.executeQuery();
-
-            while (rs.next()) {
-                categories.add (rs.getString(1)); // gets the category name from column index 1 (of each row)
-            }
-            //categories.remove ("item_id");
-            rs.close();
-            ps.close();
-            ApplicationDB.closeConnection(con);
-            return(categories);
-            
-        }
-        catch(Exception e) {
-            e.printStackTrace();
-            return(categories);
-        }
-    }
     // @Override
     protected void doPost (HttpServletRequest request, HttpServletResponse response)
         throws IOException, ServletException {
@@ -134,59 +268,148 @@ public class SearchServlet extends HttpServlet{
                 Connection con = ApplicationDB.getConnection();
 
                 /* gets all the checkboxes that are selected per category from the form, as well as any search input */
-                /* returns values based on that search */
+                /* returns values based on that search bar input */
+
                 String searchValue = request.getParameter("searchbar");
                 //String [] keywords = searchValue.split ("");
                 String[] keywords = new String[0];
+                
+                //normalizes the keywords
                 if (searchValue != null && !searchValue.trim().isEmpty()) {
-                    keywords = searchValue.trim().split("\\s+"); // split into words
-                }
-
-                //the input in the search bar should search against all the string categories no? and be like input string like category?
-                /* code below used to initialize the sidebar filter  */
-                /* get the list of filter categories */
-                String query ="SELECT COLUMN_NAME "+
-                "FROM INFORMATION_SCHEMA.COLUMNS "+
-                "WHERE TABLE_SCHEMA='tech_barn' AND TABLE_NAME IN ('Item', 'Phone', 'TV', 'Headphones') "+
-                "AND COLUMN_NAME NOT IN ('item_id', 'image_path', 'in_stock') "+
-                "AND DATA_TYPE IN ('varchar', 'char');";
-                //??"ORDER BY ORDINAL_POSITION";
-
-                PreparedStatement ps = con.prepareStatement(query);
-                ResultSet rs = ps.executeQuery();
-                ArrayList<String> stringCategories = new ArrayList<>();
-                while (rs.next()) {
-                    stringCategories.add (rs.getString(1)); // gets the category name from column index 1 (of each row)
-                }
-
-                rs.close();
-                ps.close();
-                //match keywords to string categories
-                String query2 = "SELECT * FROM Item i " +
-                "LEFT JOIN Phone p ON p.item_id = i.item_id " +
-                "LEFT JOIN TV t ON t.item_id = i.item_id " +
-                "LEFT JOIN Headphones h ON h.item_id = i.item_id " +
-                "WHERE ";
-                //for each keyword
-                for (int i = 0; i< keywords.length; i++){
-                    String keyword = keywords[i];
-                    query2 = query2 + "CONCAT_WS(' ',";
-                    //check against each category
-                    for (int j = 0; j< stringCategories.size(); j++){
-                        String strCat = stringCategories.get(j);
-                        query2 = query2 + " `" + strCat + "` ";
-                        if (j != (stringCategories.size()-1)){
-                            query2 = query2 + " , ";
+                    String[] raw = searchValue.trim().split("\\s+");
+                
+                    List<String> cleaned = new ArrayList<>();
+                    for (String w : raw) {
+                        String norm = normalizeKeyword(w);
+                        if (norm != null && !norm.isEmpty()) {
+                            cleaned.add(norm);
                         }
                     }
-                    query2 = query2 + ") LIKE '%" + keyword + "%'";
-                    if (i != (keywords.length -1)){
-                        query2 = query2 + " AND ";
+                
+                    keywords = cleaned.toArray(new String[0]);
+                }
+                
+                // Get columns grouped by type for searching/filtering
+                Map<String, List<String>> columnTypes = getColumnsByType();
+                List<String> stringCategories = columnTypes.getOrDefault("string", new ArrayList<>());
+                List<String> booleanCategories = columnTypes.getOrDefault("boolean", new ArrayList<>());
+                List<String> numericCategories = columnTypes.getOrDefault("numeric", new ArrayList<>());
+
+                //match keyword to string categories
+                StringBuilder queryBuilder = new StringBuilder(
+                    "SELECT * FROM Item i " +
+                    "LEFT JOIN Phone p ON p.item_id = i.item_id " +
+                    "LEFT JOIN TV t ON t.item_id = i.item_id " +
+                    "LEFT JOIN Headphones h ON h.item_id = i.item_id "
+                );
+                
+                // Track if WHERE clause has been added (shared across all loops)
+                boolean hasWhere = false;
+                
+                // store the String parameters for LIKE clauses
+                List<String> likeParams = new ArrayList<>();
+                
+                // build keyword conditions only if there are keywords
+                if (keywords.length > 0) {
+                    queryBuilder.append("WHERE ");
+                    hasWhere = true;
+
+                //for each keyword
+                    for (int i = 0; i < keywords.length; i++) {
+                        String keyword = keywords[i];
+                        queryBuilder.append("CONCAT_WS(' ',");
+                        //check against each category
+                        for (int j = 0; j < stringCategories.size(); j++) {
+                            String strCat = stringCategories.get(j);
+                            queryBuilder.append(" `").append(strCat).append("` ");
+                            if (j != stringCategories.size() - 1) {
+                                queryBuilder.append(" , ");
+                            }
+                        }
+                        queryBuilder.append(") LIKE ?");
+                
+                        likeParams.add("%" + keyword + "%");
+                
+                        if (i != keywords.length - 1) {
+                            queryBuilder.append(" AND ");
+                        }
+                    }
+                }
+
+                //match keyword to numerical categories
+                List<Double> equalParams = new ArrayList<>(); //values can be int or float
+
+                for (String kw : keywords) {
+                    if (kw != null && kw.matches("\\d+(\\.\\d+)?")) equalParams.add(Double.parseDouble(kw));}
+
+
+                if (!equalParams.isEmpty() && !numericCategories.isEmpty()) {
+
+                    // adds WHERE or AND clause
+                    if (!hasWhere) {
+                        queryBuilder.append("WHERE ");
+                        hasWhere = true;
+                    } else {
+                        queryBuilder.append(" AND ");
+                    }
+                
+                    queryBuilder.append("(");
+                
+                    boolean first = true;
+                    for (String col : numericCategories) {
+                        for (int i = 0; i < equalParams.size(); i++) {
+                            if (!first) queryBuilder.append(" OR ");
+                            queryBuilder.append("`").append(col).append("` = ?");
+                            first = false;
+                        }
+                    }
+                
+                    queryBuilder.append(")");
+                }
+                
+                //match keyword to boolean categories (hard-coded)
+                Set<String> boolTrueCols = new HashSet<>();
+                Set<String> boolFalseCols = new HashSet<>(); // for "wired" meaning isWireless = 0
+
+                for (String kw : keywords) {
+                    if (kw == null) continue;
+                    String k = kw.toLowerCase().trim();
+
+                    if (k.equals("5g") && booleanCategories.contains("is5G")) {
+                        boolTrueCols.add("is5G");
                     }
 
+                    if ((k.contains("wireless") || k.contains("bluetooth")) &&
+                        booleanCategories.contains("isWireless")) {
+                        boolTrueCols.add("isWireless");
+                    }
+
+                    if (k.equals("wired") && booleanCategories.contains("isWireless")) {
+                        boolFalseCols.add("isWireless");  // we will add "isWireless = 0"
+                    }
+
+                    if (k.equals("smart tv") && booleanCategories.contains("isSmartTv")) {
+                        boolTrueCols.add("isSmartTv");
+                    }
+
+                    if (k.equals("hdr") && booleanCategories.contains("isHdr")) {
+                        boolTrueCols.add("isHdr");
+                    }
+
+                    if (k.contains("microphone") && booleanCategories.contains("hasMicrophone")) {
+                        boolTrueCols.add("hasMicrophone");
+                    }
+
+                    if ((k.contains("noise cancelling") || k.contains("noise cancellation"))
+                        && booleanCategories.contains("hasNoiseCancellation")) {
+                        boolTrueCols.add("hasNoiseCancellation");
+                    }
+
+                    if (k.contains("unlocked") && booleanCategories.contains("isUnlocked")) {
+                        boolTrueCols.add("isUnlocked");
+                    }
                 }
-                //match keyword to boolean categories
-                //match keyword to numerical categories
+
 
                 //logic just to get the selected filter categories
                 ArrayList<String> categories = getFilterCategories();
@@ -200,33 +423,53 @@ public class SearchServlet extends HttpServlet{
                     }
                 }
 
-                //this is turning into a really long where statment, should i use a subquery or something?
-                for (String selectedCat : selectedCategories.keySet()){
-                    query2 = query2 + " AND `" + selectedCat + "` IN ( ";
-                    for (int i = 0; i< selectedCategories.get(selectedCat).size(); i++){
-                        String selectedValue = selectedCategories.get(selectedCat).get(i);
-                        query2 = query2 + selectedValue;
-                        if (i != (selectedCategories.get(selectedCat).size() -1)){
-                            query2 = query2 + " , ";
+                // Store IN clause parameters separately to maintain correct order
+                List<String> inParams = new ArrayList<>();
+                
+                // Add selected category filters to the query
+                if (!selectedCategories.isEmpty()) {
+                    for (String selectedCat : selectedCategories.keySet()) {
+                        if (hasWhere) {
+                            queryBuilder.append(" AND ");
+                        } else {
+                            queryBuilder.append(" WHERE ");
+                            hasWhere = true;
                         }
-                        else{
-                            query2 = query2 + ")";
+                        
+                        queryBuilder.append("`").append(selectedCat).append("` IN (");
+                        List<String> values = selectedCategories.get(selectedCat);
+                        for (int i = 0; i < values.size(); i++) {
+                            if (i > 0) queryBuilder.append(", ");
+                            queryBuilder.append("?");
+                            inParams.add(values.get(i)); // Store IN clause parameters separately
                         }
+                        queryBuilder.append(")");
                     }
                 }
 
-
-                //we could also add code to transform searchInputs to booleans (ie, if it contains "wireless", remove it and transform to boolean; we could get the boolean keywords using the transformName method)
-                //we could also add code to transform strings with numerical inptus followed by units of measure (120 Hz) and match it to numerical columns
-                //----> another way to do this would be to remove all units of measure, and add a query to select the numerical data type (int, float) columns like query2, and compare all numbers against those columns
-
-                query2 = query2 + ";";
-                System.out.println ("SEARCH POST QUERY: " + query2);
+                String query2 = queryBuilder.toString();
                 //how to do fuzzy matching? should we even bother?
                 //it should also use these to be exact matches for each selected category name = selectedcategoryvalue1 or selectedcategoryvalue2 
                 
                 /* get the list of values per category */
                 PreparedStatement ps2 = con.prepareStatement(query2);
+                
+                // Set parameters for the PreparedStatement in the order they appear in the query
+                int paramIndex = 1;
+                // 1. Set LIKE parameters for keyword search (string categories)
+                for (String likeParam : likeParams) {
+                    ps2.setString(paramIndex++, likeParam);
+                }
+                // 2. Set equal parameters for numeric search
+                for (Double equalParam : equalParams) {
+                    ps2.setDouble(paramIndex++, equalParam);
+                }
+                // 3. Set IN clause parameters for selected categories
+                for (String inParam : inParams) {
+                    ps2.setString(paramIndex++, inParam);
+                }
+                
+                System.out.println ("SEARCH POST QUERY: " + ps2.toString());
                 ResultSet rs2 = ps2.executeQuery();
                 ArrayList<ItemBean> items = new ArrayList<>(); //ItemBean defined in the same package
                 
@@ -250,13 +493,24 @@ public class SearchServlet extends HttpServlet{
                 
                 rs2.close();
                 ps2.close();
+                
+                // Initialize filter categories and values using helper method
+                Map<String, Object> filterData = initializeFilterCategories(con);
+                
                 ApplicationDB.closeConnection(con);
-                System.out.println ("query2: " + query2);
-                //request.setAttribute("pageTitle", pageTitle);
+                
+                // Pass categories to jsp (general first, then item-type specific categories)
+                request.setAttribute("generalCategories", filterData.get("generalCategories"));
+                request.setAttribute("phoneCategories", filterData.get("phoneCategories"));
+                request.setAttribute("tvCategories", filterData.get("tvCategories"));
+                request.setAttribute("headphonesCategories", filterData.get("headphonesCategories"));
+                request.setAttribute("categoryValues", filterData.get("categoryValues"));
+                
+                // Pass selected categories so JSP can check the checkboxes
+                request.setAttribute("selectedCategories", selectedCategories);
+                
                 request.setAttribute("items", items);
                 request.setAttribute("searched", true);
-                //request.setAttribute ("cardStyle", cardStyle);
-                //request.setAttribute("categories", categories);
                 request.getRequestDispatcher("search.jsp").forward(request, response);
 
             }

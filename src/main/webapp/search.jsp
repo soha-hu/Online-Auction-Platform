@@ -195,6 +195,15 @@ public String transformBoolean (String booleanInt){
             color: #6b7280;
         }
 
+        .filters-section-title {
+        margin-top: 16px;
+        margin-bottom: 4px;
+        font-size: 11px;
+        font-weight: 700;
+        color: #4b5563;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        }
         .filter-group {
             margin-bottom: 18px;
             padding-top: 10px;
@@ -361,12 +370,17 @@ public String transformBoolean (String booleanInt){
     </div>
     <%
         }
+        // Get search value to preserve it in the search bar
+        String searchValue = request.getParameter("searchbar");
+        if (searchValue == null) {
+            searchValue = "";
+        }
     %>
     <form method="post" action="search"> 
     <div class="category-hero">
             <div class="search">
                 <span class="search-icon material-symbols-outlined">search</span>
-                <input class = "search-input" type="search" placeholder="Search our inventory..." name="searchbar"></input>
+                <input class = "search-input" type="search" placeholder="Search our inventory..." name="searchbar" value="<%= searchValue != null ? searchValue : "" %>"></input>
             </div>
     </div>
     <div class ="search-layout">
@@ -377,35 +391,115 @@ public String transformBoolean (String booleanInt){
                         <span class="filters-header-title">Filters</span>
                         <span class="filters-header-subtitle">Refine results</span>
                     </div>
-                    <% 
-                        ArrayList<String> categories =  (ArrayList<String>) request.getAttribute("categories");
-                        System.out.println("Categories: " + categories);
-
-                        
-                        HashMap<String, ArrayList<String>> categoryValues= (HashMap<String, ArrayList<String>>) request.getAttribute("categoryValues");
-                        
-                        if (categories != null) {
-                            for (String category: categoryValues.keySet()){
-                    %>
-                            <!--for each category, create a filter group -->
-                            <!--dynamically loop through and render the properties -->
-                        <div class="filter-group">
-                            <!--for each value in category, create a span and label-->
-                            <span class="filter-title" name="${category}"><%= transformName(category) %></span>
-                            <%for (String categoryValue: categoryValues.get(category)){%>
-                            <!--dynamically render the possible values for each property -->
-                            <label class="filter-pill">
-                                <input type="checkbox" name="<%= category %>" value="<%= categoryValue %>">
-                                <span><%= transformBoolean(categoryValue) %></span>
-                            </label>
-                            <%
-                                }
-                            %>
-                        </div>
                     <%
-                            }
-                        }
+                    ArrayList<String> generalCategories = (ArrayList<String>) request.getAttribute("generalCategories");
+                    ArrayList<String> phoneCategories = (ArrayList<String>) request.getAttribute("phoneCategories");
+                    ArrayList<String> tvCategories = (ArrayList<String>) request.getAttribute("tvCategories");
+                    ArrayList<String> headphonesCategories = (ArrayList<String>) request.getAttribute("headphonesCategories");
+                
+                    HashMap<String, ArrayList<String>> categoryValues =
+                        (HashMap<String, ArrayList<String>>) request.getAttribute("categoryValues");
+                    
+                    // Get selected categories to preserve checkbox state
+                    Map<String, List<String>> selectedCategories = 
+                        (Map<String, List<String>>) request.getAttribute("selectedCategories");
+                    if (selectedCategories == null) {
+                        selectedCategories = new HashMap<>();
+                    }
+                %>
+                
+                <!-- General section -->
+                <div class="filters-section-title">General</div>
+                <%
+                if (generalCategories != null) {
+                    for (String category : generalCategories) {
+                        if (categoryValues == null || !categoryValues.containsKey(category)) continue;
+                        List<String> selectedVals = selectedCategories.get(category);
+                %>
+                <div class="filter-group">
+                    <span class="filter-title"><%= transformName(category) %></span>
+                    <% for (String val : categoryValues.get(category)) { 
+                        boolean checked = (selectedVals != null && selectedVals.contains(val));
                     %>
+                        <label class="filter-pill">
+                            <input type="checkbox" name="<%= category %>" value="<%= val %>" <%= checked ? "checked" : "" %>>
+                            <span><%= transformBoolean(val) %></span>
+                        </label>
+                    <% } %>
+                </div>
+                <% } 
+                }
+                %>
+                
+                <!-- Phones -->
+                <div class="filters-section-title">Phones</div>
+                <%
+                if (phoneCategories != null) {
+                    for (String category : phoneCategories) {
+                        if (categoryValues == null || !categoryValues.containsKey(category)) continue;
+                        List<String> selectedVals = selectedCategories.get(category);
+                %>
+                <div class="filter-group">
+                    <span class="filter-title"><%= transformName(category) %></span>
+                    <% for (String val : categoryValues.get(category)) { 
+                        boolean checked = (selectedVals != null && selectedVals.contains(val));
+                    %>
+                        <label class="filter-pill">
+                            <input type="checkbox" name="<%= category %>" value="<%= val %>" <%= checked ? "checked" : "" %>>
+                            <span><%= transformBoolean(val) %></span>
+                        </label>
+                    <% } %>
+                </div>
+                <% } 
+                }
+                %>
+                
+                <!-- TV -->
+                <div class="filters-section-title">TV</div>
+                <%
+                if (tvCategories != null) {
+                    for (String category : tvCategories) {
+                        if (categoryValues == null || !categoryValues.containsKey(category)) continue;
+                        List<String> selectedVals = selectedCategories.get(category);
+                %>
+                <div class="filter-group">
+                    <span class="filter-title"><%= transformName(category) %></span>
+                    <% for (String val : categoryValues.get(category)) { 
+                        boolean checked = (selectedVals != null && selectedVals.contains(val));
+                    %>
+                        <label class="filter-pill">
+                            <input type="checkbox" name="<%= category %>" value="<%= val %>" <%= checked ? "checked" : "" %>>
+                            <span><%= transformBoolean(val) %></span>
+                        </label>
+                    <% } %>
+                </div>
+                <% } 
+                }
+                %>
+                
+                <!-- Headphones -->
+                <div class="filters-section-title">Headphones</div>
+                <%
+                if (headphonesCategories != null) {
+                    for (String category : headphonesCategories) {
+                        if (categoryValues == null || !categoryValues.containsKey(category)) continue;
+                        List<String> selectedVals = selectedCategories.get(category);
+                %>
+                <div class="filter-group">
+                    <span class="filter-title"><%= transformName(category) %></span>
+                    <% for (String val : categoryValues.get(category)) { 
+                        boolean checked = (selectedVals != null && selectedVals.contains(val));
+                    %>
+                        <label class="filter-pill">
+                            <input type="checkbox" name="<%= category %>" value="<%= val %>" <%= checked ? "checked" : "" %>>
+                            <span><%= transformBoolean(val) %></span>
+                        </label>
+                    <% } %>
+                </div>
+                <% } 
+                }
+                %>
+                
                     <button type="submit" class="apply-button">Apply Filters</button>
                 </div>
             </form>
@@ -431,10 +525,9 @@ public String transformBoolean (String booleanInt){
             <div class="sort">
                 <label for="sortBy">Sort by</label>
                 <select id="sortBy" name="sortBy" form="sortForm">
-                    <option value="relevance">Relevance</option>
+                    <option value="relevance">Alphabetical: A-Z</option>
                     <option value="priceAsc">Price: Low to High</option>
                     <option value="priceDesc">Price: High to Low</option>
-                    <option value="newest">Newest</option>
                 </select>
             </div>
         </div>
