@@ -2,6 +2,7 @@
     pageEncoding="UTF-8"%>
 <%@ page import="java.io.*,java.util.*,java.sql.*" %>
 <%@ page import="javax.servlet.http.*,javax.servlet.*" %>
+<%@ page import="com.techbarn.webapp.ApplicationDB" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -200,12 +201,7 @@
         ResultSet rs = null;
 
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            String dbUrl  = "jdbc:mysql://localhost:3306/tech_barn?useUnicode=true&useSSL=false";
-            String dbUser = "root";
-            String dbPass = "saad2012";
-
-            con = DriverManager.getConnection(dbUrl, dbUser, dbPass);
+            con = ApplicationDB.getConnection();
 
             String sql =
                 "SELECT a.minimum_price, a.starting_price, " +
@@ -230,7 +226,7 @@
         } finally {
             if (rs != null) try { rs.close(); } catch (Exception ignore) {}
             if (ps != null) try { ps.close(); } catch (Exception ignore) {}
-            if (con != null) try { con.close(); } catch (Exception ignore) {}
+            if (con != null) try { ApplicationDB.closeConnection(con); } catch (Exception ignore) {}
         }
     }
 %>

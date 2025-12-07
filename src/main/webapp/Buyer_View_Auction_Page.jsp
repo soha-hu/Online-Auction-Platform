@@ -2,6 +2,7 @@
     pageEncoding="UTF-8" %>
 <%@ page import="java.sql.*" %>
 <%@ page import="java.util.*" %>
+<%@ page import="com.techbarn.webapp.ApplicationDB" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -227,11 +228,7 @@
         ResultSet rsSimilar = null;
 
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            String url = "jdbc:mysql://localhost:3306/tech_barn?useUnicode=true&useSSL=false";
-            String user = "root";
-            String pass = "saad2012";
-            con = DriverManager.getConnection(url, user, pass);
+            con = ApplicationDB.getConnection();
 
             int auctionIdInt = Integer.parseInt(auctionIdParam.trim());
 
@@ -328,7 +325,7 @@
             try { if (psSimilar != null) psSimilar.close(); } catch (Exception ignore) {}
             try { if (psBids != null) psBids.close(); } catch (Exception ignore) {}
             try { if (psAuction != null) psAuction.close(); } catch (Exception ignore) {}
-            try { if (con != null) con.close(); } catch (Exception ignore) {}
+            try { if (con != null) ApplicationDB.closeConnection(con); } catch (Exception ignore) {}
         }
     }
 %>
@@ -356,6 +353,13 @@
     <% } %>
 
     <a class="back-link" href="welcome.jsp">Back to Home</a>
+    
+    <% if (auctionInfo != null && errorMessage == null) { %>
+      <a class="back-link" href="Buyer_Create_Bid_Page.jsp?auctionId=<%= auctionInfo.get("auction_id") %>" 
+         style="display: block; margin-top: 8px;">
+        Create New Bid
+      </a>
+    <% } %>
   </div>
 
   <div class="right">

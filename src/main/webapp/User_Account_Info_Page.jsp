@@ -2,6 +2,7 @@
     pageEncoding="UTF-8"%>
 <%@ page import="java.sql.*" %>
 <%@ page import="java.util.*" %>
+<%@ page import="com.techbarn.webapp.ApplicationDB" %>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -214,12 +215,7 @@
             PreparedStatement psDel = null;
 
             try {
-                Class.forName("com.mysql.cj.jdbc.Driver");
-                String url  = "jdbc:mysql://localhost:3306/tech_barn?useUnicode=true&useSSL=false";
-                String user = "root";
-                String pass = "saad2012";
-
-                con = DriverManager.getConnection(url, user, pass);
+                con = ApplicationDB.getConnection();
 
                 String sqlDel = "DELETE FROM User WHERE user_id = ?";
                 psDel = con.prepareStatement(sqlDel);
@@ -237,7 +233,7 @@
                 errorMessage = "Error deleting account: " + e.getMessage();
             } finally {
                 try { if (psDel != null) psDel.close(); } catch (Exception ignore) {}
-                try { if (con  != null) con.close(); } catch (Exception ignore) {}
+                try { if (con  != null) ApplicationDB.closeConnection(con); } catch (Exception ignore) {}
             }
         }
     }
@@ -261,12 +257,7 @@
             ResultSet rs = null;
 
             try {
-                Class.forName("com.mysql.cj.jdbc.Driver");
-                String url  = "jdbc:mysql://localhost:3306/tech_barn?useUnicode=true&useSSL=false";
-                String user = "root";
-                String pass = "saad2012";
-
-                con = DriverManager.getConnection(url, user, pass);
+                con = ApplicationDB.getConnection();
 
                 String sql =
                     "SELECT user_id, username, first_name, last_name, email, phone, address, role " +
@@ -293,7 +284,7 @@
             } finally {
                 try { if (rs != null) rs.close(); } catch (Exception ignore) {}
                 try { if (ps != null) ps.close(); } catch (Exception ignore) {}
-                try { if (con != null) con.close(); } catch (Exception ignore) {}
+                try { if (con != null) ApplicationDB.closeConnection(con); } catch (Exception ignore) {}
             }
         }
     }

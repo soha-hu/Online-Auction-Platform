@@ -1,11 +1,11 @@
-/*package com.techbarn.webapp;
+package com.techbarn.webapp;
 
-import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -17,11 +17,6 @@ import java.sql.*;
 )
 public class BuyerCreateBidServlet extends HttpServlet {
 
-    private static final String DB_URL  =
-            "jdbc:mysql://localhost:3306/tech_barn?useUnicode=true&useSSL=false";
-    private static final String DB_USER = "root";
-    private static final String DB_PASS = "saad2012";
-
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -29,8 +24,8 @@ public class BuyerCreateBidServlet extends HttpServlet {
         String auctionIdStr = request.getParameter("auctionId");
         String bidAmountStr = request.getParameter("bidAmount");
 
-        if (auctionIdStr == null || auctionIdStr.isBlank()
-                || bidAmountStr == null || bidAmountStr.isBlank()) {
+        if (auctionIdStr == null || auctionIdStr.trim().isEmpty()
+                || bidAmountStr == null || bidAmountStr.trim().isEmpty()) {
 
             request.setAttribute("errorMessage",
                     "Auction ID and Bid Amount are required.");
@@ -66,7 +61,11 @@ public class BuyerCreateBidServlet extends HttpServlet {
             }
         }
         if (buyerId == null) {
-            buyerId = 1;   // TEMP for testing if you’re not wired to login yet
+            request.setAttribute("errorMessage",
+                    "You must be logged in to place a bid.");
+            request.getRequestDispatcher("Buyer_Create_Bid_Page.jsp")
+                   .forward(request, response);
+            return;
         }
 
         Connection con = null;
@@ -75,8 +74,7 @@ public class BuyerCreateBidServlet extends HttpServlet {
         ResultSet rs = null;
 
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            con = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
+            con = ApplicationDB.getConnection();
 
             String checkSql =
                     "SELECT a.minimum_price, a.starting_price, a.increment, " +
@@ -149,8 +147,7 @@ public class BuyerCreateBidServlet extends HttpServlet {
             try { if (rs != null) rs.close(); } catch (Exception ignored) {}
             try { if (psCheck != null) psCheck.close(); } catch (Exception ignored) {}
             try { if (psInsert != null) psInsert.close(); } catch (Exception ignored) {}
-            try { if (con != null) con.close(); } catch (Exception ignored) {}
+            try { if (con != null) ApplicationDB.closeConnection(con); } catch (Exception ignored) {}
         }
     }
 }
-*/
