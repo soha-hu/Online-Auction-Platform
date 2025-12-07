@@ -1,278 +1,410 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@ page import="java.io.*,java.util.*,java.sql.*" %>
-<%@ page import="javax.servlet.http.*,javax.servlet.*" %>
-<%@ page import="com.techbarn.webapp.ApplicationDB" %>
+<%@ page import="java.sql.*" %>
+<%@ page import="java.util.*" %>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Tech Barn - Place a Bid</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-<style>
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Inter', sans-serif;
-  }
+  <meta charset="UTF-8">
+  <title>Tech Barn - My Account</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
-  body, html {
-    height: 100%;
-    width: 100%;
-    background: url('Images/backgrounds/login_screen_background.jpg') no-repeat center center/cover;
-    background-attachment: fixed;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .form-box {
-    position: relative;
-    z-index: 1;
-    width: 100%;
-    max-width: 500px;
-    background: #ffffff;
-    border-radius: 20px;
-    padding: 3rem 2.5rem;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    text-align: center;
-    transition: all 0.3s ease;
-  }
-
-  .form-box:hover {
-    box-shadow: 0 25px 70px rgba(0, 0, 0, 0.35);
-  }
-
-  h1 {
-    margin-bottom: 0.5rem;
-    color: #2d3748;
-    font-weight: 700;
-    font-size: 2rem;
-    letter-spacing: -0.5px;
-  }
-
-  .subtitle {
-    font-size: 0.9rem;
-    color: #718096;
-    margin-bottom: 1.2rem;
-  }
-
-  .form-container {
-    width: 100%;
-    text-align: left;
-  }
-
-  label {
-    display: block;
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: #4a5568;
-    margin-top: 6px;
-  }
-
-  .form-input {
-    width: 100%;
-    padding: 14px 18px;
-    margin: 6px 0 12px 0;
-    border: 2px solid #e2e8f0;
-    border-radius: 10px;
-    font-size: 1rem;
-    outline: none;
-    transition: all 0.3s ease;
-    background: #f7fafc;
-    color: #2d3748;
-  }
-
-  .form-input::placeholder {
-    color: #a0aec0;
-  }
-
-  .form-input:focus {
-    border-color: #667eea;
-    background: #ffffff;
-    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
-    transform: translateY(-1px);
-  }
-
-  .submit-button {
-    width: 100%;
-    padding: 14px;
-    margin-top: 10px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: #fff;
-    font-size: 1rem;
-    font-weight: 600;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-  }
-
-  .submit-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
-  }
-
-  .message {
-    margin-top: 15px;
-    padding: 12px;
-    border-radius: 8px;
-    font-size: 0.9rem;
-    font-weight: 500;
-  }
-
-  .message.success {
-    background: #c6f6d5;
-    color: #22543d;
-    border: 1px solid #9ae6b4;
-  }
-
-  .message.error {
-    background: #fed7d7;
-    color: #742a2a;
-    border: 1px solid #fc8181;
-  }
-
-  .helper-text {
-    font-size: 0.85rem;
-    color: #718096;
-    margin-top: 6px;
-  }
-
-  .footer-link {
-    margin-top: 18px;
-    font-size: 0.9rem;
-    color: #667eea;
-    text-decoration: none;
-    display: inline-block;
-  }
-
-  .footer-link:hover {
-    color: #764ba2;
-    text-decoration: underline;
-  }
-
-  .price-box {
-    background: #f7fafc;
-    border-radius: 12px;
-    padding: 12px 16px;
-    margin-bottom: 1rem;
-    border: 1px solid #e2e8f0;
-    font-size: 0.9rem;
-    color: #2d3748;
-  }
-
-  .price-box p {
-    margin: 4px 0;
-  }
-
-  @media(max-width: 480px){
-    .form-box {
-      padding: 2rem 1.5rem;
-      margin: 1rem;
-      border-radius: 15px;
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
     }
+
+    body, html {
+      height: 100%;
+      width: 100%;
+      background: #f3f4f6;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 700px;
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 2.5rem;
+      box-shadow: 0 20px 50px rgba(15, 23, 42, 0.15);
+    }
+
     h1 {
-      font-size: 1.75rem;
+      margin-bottom: 0.4rem;
+      color: #111827;
+      font-weight: 700;
+      font-size: 1.9rem;
+      letter-spacing: -0.4px;
     }
-    .form-input, .submit-button {
+
+    .subtitle {
+      font-size: 0.9rem;
+      color: #6b7280;
+      margin-bottom: 1.3rem;
+    }
+
+    .section-title {
+      margin-top: 1rem;
+      margin-bottom: 0.4rem;
       font-size: 0.95rem;
-      padding: 12px 16px;
+      font-weight: 600;
+      color: #111827;
     }
-  }
-</style>
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px 18px;
+      margin-bottom: 0.6rem;
+    }
+
+    .info-label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      color: #9ca3af;
+    }
+
+    .info-value {
+      font-size: 0.95rem;
+      color: #111827;
+      font-weight: 500;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 3px 10px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      margin-right: 6px;
+    }
+
+    .tag-buyer {
+      background: #eff6ff;
+      color: #1d4ed8;
+    }
+
+    .tag-seller {
+      background: #ecfdf5;
+      color: #047857;
+    }
+
+    .message {
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 9px;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .message.error {
+      background: #fee2e2;
+      border: 1px solid #fecaca;
+      color: #b91c1c;
+    }
+
+    .message.success {
+      background: #dcfce7;
+      border: 1px solid #bbf7d0;
+      color: #166534;
+    }
+
+    .message.info {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      color: #1d4ed8;
+    }
+
+    .actions {
+      margin-top: 1.4rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .danger-button {
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+      background: #ef4444;
+      color: #ffffff;
+      box-shadow: 0 6px 16px rgba(239, 68, 68, 0.45);
+      transition: all 0.15s ease;
+    }
+
+    .danger-button:hover {
+      background: #dc2626;
+      transform: translateY(-1px);
+      box-shadow: 0 8px 20px rgba(220, 38, 38, 0.55);
+    }
+
+    .back-link {
+      font-size: 0.9rem;
+      color: #6366f1;
+      text-decoration: none;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+      color: #4f46e5;
+    }
+
+    .small-muted {
+      font-size: 0.8rem;
+      color: #9ca3af;
+      margin-top: 4px;
+    }
+
+    @media (max-width: 640px) {
+      .card {
+        margin: 1rem;
+        padding: 1.8rem;
+      }
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 <body>
 
 <%
-    String minPrice = null;
-    String startingPriceVal = null;
-    String currentPriceVal = null;
-    String auctionIdStr = request.getParameter("auctionId");
+    // 1) Get userId from session (user already logged in)
+    Integer userId = null;
+    Object sessionUserIdObj = session.getAttribute("userId");
 
-    if (auctionIdStr != null && !auctionIdStr.trim().isEmpty()) {
+    if (sessionUserIdObj instanceof Integer) {
+        userId = (Integer) sessionUserIdObj;
+    } else if (sessionUserIdObj instanceof String) {
+        try {
+            userId = Integer.parseInt((String) sessionUserIdObj);
+        } catch (NumberFormatException ignore) {}
+    }
+
+    // If somehow not logged in, send them back to login page
+    if (userId == null) {
+        response.sendRedirect("login.jsp");
+        return;
+    }
+
+    String errorMessage = null;
+    String successMessage = null;
+    boolean accountDeleted = false;
+
+    // 2) Handle delete action only
+    if ("POST".equalsIgnoreCase(request.getMethod())) {
+        String action = request.getParameter("action");
+        if ("delete".equals(action) && userId != null) {
+            Connection con = null;
+            PreparedStatement psDel = null;
+            try {
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                String url  = "jdbc:mysql://localhost:3306/tech_barn?useUnicode=true&useSSL=false";
+                String user = "root";
+                String pass = "password123";
+
+                con = DriverManager.getConnection(url, user, pass);
+
+                String sqlDel = "DELETE FROM `User` WHERE user_id = ?";
+                psDel = con.prepareStatement(sqlDel);
+                psDel.setInt(1, userId);
+
+                int rows = psDel.executeUpdate();
+                if (rows > 0) {
+                    successMessage = "Your account has been deleted.";
+                    accountDeleted = true;
+                    session.invalidate();
+                } else {
+                    errorMessage = "Could not delete account (no rows affected).";
+                }
+            } catch (Exception e) {
+                errorMessage = "Error deleting account: " + e.getMessage();
+            } finally {
+                try { if (psDel != null) psDel.close(); } catch (Exception ignore) {}
+                try { if (con  != null) con.close(); } catch (Exception ignore) {}
+            }
+        }
+    }
+
+    // 3) Load user info (only if not deleted)
+    String username = null;
+    String firstName = null;
+    String lastName  = null;
+    String email     = null;
+    String phone     = null;
+    String address   = null;
+    String role      = null;
+
+    if (!accountDeleted) {
         Connection con = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
 
         try {
-            con = ApplicationDB.getConnection();
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            String url  = "jdbc:mysql://localhost:3306/tech_barn?useUnicode=true&useSSL=false";
+            String user = "root";
+            String pass = "password123";
+
+            con = DriverManager.getConnection(url, user, pass);
 
             String sql =
-                "SELECT a.minimum_price, a.starting_price, " +
-                "       COALESCE(MAX(b.amount), a.starting_price) AS current_price " +
-                "FROM Auction a " +
-                "LEFT JOIN Bid b ON a.auction_id = b.auction_id " +
-                "WHERE a.auction_id = ? " +
-                "GROUP BY a.minimum_price, a.starting_price";
+                "SELECT u.user_id, u.username, u.first_name, u.last_name, " +
+                "       u.email, u.phone_no, " +
+                "       a.street_name, a.apt_no, a.city, a.state, a.zip, " +
+                "       u.isBuyer, u.isSeller " +
+                "FROM `User` u " +
+                "LEFT JOIN Address a ON u.address_id = a.address_id " +
+                "WHERE u.user_id = ?";
 
             ps = con.prepareStatement(sql);
-            ps.setInt(1, Integer.parseInt(auctionIdStr.trim()));
+            ps.setInt(1, userId);
             rs = ps.executeQuery();
 
             if (rs.next()) {
-                minPrice         = rs.getString("minimum_price");
-                startingPriceVal = rs.getString("starting_price");
-                currentPriceVal  = rs.getString("current_price");
+                username  = rs.getString("username");
+                firstName = rs.getString("first_name");
+                lastName  = rs.getString("last_name");
+                email     = rs.getString("email");
+                phone     = rs.getString("phone_no");
+
+                String street = rs.getString("street_name");
+                String apt    = rs.getString("apt_no");
+                String city   = rs.getString("city");
+                String state  = rs.getString("state");
+                String zip    = rs.getString("zip");
+
+                StringBuilder addr = new StringBuilder();
+                if (street != null) addr.append(street);
+                if (apt != null && !apt.isEmpty()) addr.append(", ").append(apt);
+                if (city != null) addr.append(", ").append(city);
+                if (state != null) addr.append(", ").append(state);
+                if (zip != null) addr.append(" ").append(zip);
+                address = addr.toString();
+
+                boolean isBuyer  = rs.getBoolean("isBuyer");
+                boolean isSeller = rs.getBoolean("isSeller");
+
+                if (isBuyer && isSeller) {
+                    role = "buyer,seller";
+                } else if (isBuyer) {
+                    role = "buyer";
+                } else if (isSeller) {
+                    role = "seller";
+                } else {
+                    role = "user";
+                }
+            } else {
+                errorMessage = "No account found for user ID " + userId;
             }
+
         } catch (Exception e) {
-            out.println("<!-- DB ERROR: " + e.getMessage() + " -->");
-            e.printStackTrace(new java.io.PrintWriter(out));
+            errorMessage = "Error loading account info: " + e.getMessage();
         } finally {
-            if (rs != null) try { rs.close(); } catch (Exception ignore) {}
-            if (ps != null) try { ps.close(); } catch (Exception ignore) {}
-            if (con != null) try { ApplicationDB.closeConnection(con); } catch (Exception ignore) {}
+            try { if (rs != null) rs.close(); } catch (Exception ignore) {}
+            try { if (ps != null) ps.close(); } catch (Exception ignore) {}
+            try { if (con != null) con.close(); } catch (Exception ignore) {}
         }
     }
 %>
 
-<div class="form-box">
-  <div class="form-container">
-    <h1>Place a Bid</h1>
-    <p class="subtitle">Enter the auction ID and your bid amount.</p>
+<div class="card">
+  <h1>My Account</h1>
+  <p class="subtitle">View your buyer/seller information and manage your account.</p>
 
-    <% if (auctionIdStr != null && minPrice != null) { %>
-      <div class="price-box">
-        <p><strong>Auction ID:</strong> <%= auctionIdStr %></p>
-        <p><strong>Minimum Price:</strong> $<%= minPrice %></p>
-        <p><strong>Starting Price:</strong> $<%= startingPriceVal %></p>
-        <p><strong>Current Price:</strong> $<%= currentPriceVal %></p>
+  <% if (errorMessage != null) { %>
+    <div class="message error"><%= errorMessage %></div>
+  <% } %>
+
+  <% if (successMessage != null) { %>
+    <div class="message success"><%= successMessage %></div>
+  <% } %>
+
+  <% if (!accountDeleted && errorMessage == null && username != null) { %>
+
+    <div class="section-title">Profile</div>
+    <div class="info-grid">
+      <div>
+        <div class="info-label">Username</div>
+        <div class="info-value"><%= username %></div>
       </div>
-    <% } else if (auctionIdStr != null && minPrice == null) { %>
-      <div class="message error">
-        No auction found with ID <%= auctionIdStr %>.
+      <div>
+        <div class="info-label">Full Name</div>
+        <div class="info-value">
+          <%= (firstName != null ? firstName : "") %>
+          <%= (lastName  != null ? lastName  : "") %>
+        </div>
       </div>
-    <% } %>
+      <div>
+        <div class="info-label">Email</div>
+        <div class="info-value"><%= email %></div>
+      </div>
+      <div>
+        <div class="info-label">Phone</div>
+        <div class="info-value"><%= phone %></div>
+      </div>
+      <div style="grid-column: 1 / -1;">
+        <div class="info-label">Address</div>
+        <div class="info-value"><%= address %></div>
+      </div>
+    </div>
 
-    <form action="buyerCreateBid" method="post">
-      <label for="auctionId">Auction ID</label>
-      <input type="number" id="auctionId" name="auctionId"
-             value="<%= (auctionIdStr != null ? auctionIdStr : "") %>"
-             placeholder="e.g. 1" required class="form-input">
-
-      <label for="bidAmount">Bid Amount ($)</label>
-      <input type="number" step="0.01" id="bidAmount" name="bidAmount"
-             placeholder="e.g. 650.00" required class="form-input">
-
-      <button type="submit" class="submit-button">Submit Bid</button>
-      <p class="helper-text">
-        Your bid must satisfy the auction's minimum price and increment rules.
+    <div class="section-title">Account Type</div>
+    <div>
+      <%
+         String roleLower = (role == null) ? "" : role.toLowerCase(Locale.ROOT);
+      %>
+      <% if (roleLower.contains("buyer")) { %>
+        <span class="tag tag-buyer">Buyer</span>
+      <% } %>
+      <% if (roleLower.contains("seller")) { %>
+        <span class="tag tag-seller">Seller</span>
+      <% } %>
+      <% if (!roleLower.contains("buyer") && !roleLower.contains("seller")) { %>
+        <span class="tag tag-buyer">Standard User</span>
+      <% } %>
+      <p class="small-muted">
+        This page is a self-view: you are only seeing your own account details.
       </p>
-    </form>
+    </div>
 
-    <% if (request.getAttribute("successMessage") != null) { %>
-      <div class="message success"><%= request.getAttribute("successMessage") %></div>
-    <% } else if (request.getAttribute("errorMessage") != null) { %>
-      <div class="message error"><%= request.getAttribute("errorMessage") %></div>
-    <% } %>
+    <div class="actions">
+      <form method="post" action="User_Account_Info_Page.jsp"
+            onsubmit="return confirm('Are you sure you want to delete your account? This cannot be undone.');">
+        <input type="hidden" name="action" value="delete" />
+        <button type="submit" class="danger-button">Delete My Account</button>
+      </form>
 
-    <a class="footer-link" href="welcome.jsp">Back to Home</a>
-  </div>
+      <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+        <a href="welcome.jsp" class="back-link">Back to Home</a>
+        <!-- This just goes to login.jsp; if you want it to log out, hook it to your logout page/servlet -->
+        <a href="login.jsp" class="back-link">Back to Login</a>
+      </div>
+    </div>
+
+  <% } else if (accountDeleted) { %>
+    <div class="message info">
+      Your account has been removed from the system.
+    </div>
+    <div class="actions">
+      <a href="welcome.jsp" class="back-link">Back to Home</a>
+      <a href="login.jsp" class="back-link">Back to Login</a>
+    </div>
+  <% } %>
 </div>
 
 </body>
