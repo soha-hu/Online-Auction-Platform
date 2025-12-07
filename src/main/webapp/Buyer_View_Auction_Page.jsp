@@ -196,6 +196,14 @@
       text-decoration: underline;
     }
 
+    a {
+      transition: color 0.2s ease;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
     @media (max-width: 900px) {
       body, html {
         align-items: flex-start;
@@ -235,7 +243,8 @@
             String sqlAuction =
                 "SELECT a.auction_id, a.status, a.start_time, a.end_time, " +
                 "       a.minimum_price, a.starting_price, a.increment, " +
-                "       i.title, i.brand, i.condition, i.color, " +
+                "       i.item_id, i.title, i.brand, i.condition, i.color, " +
+                "       i.image_path, i.description, i.in_stock, " +
                 "       u.username AS seller_username " +
                 "FROM Auction a " +
                 "JOIN Item i ON a.item_id = i.item_id " +
@@ -255,6 +264,7 @@
                 auctionInfo.put("minimum_price", rsAuction.getBigDecimal("minimum_price"));
                 auctionInfo.put("starting_price", rsAuction.getBigDecimal("starting_price"));
                 auctionInfo.put("increment", rsAuction.getBigDecimal("increment"));
+                auctionInfo.put("item_id", rsAuction.getInt("item_id"));
                 auctionInfo.put("title", rsAuction.getString("title"));
                 auctionInfo.put("brand", rsAuction.getString("brand"));
                 auctionInfo.put("condition", rsAuction.getString("condition"));
@@ -368,7 +378,7 @@
       <div class="info-box">
         <div class="info-row">
           <span>Item</span>
-          <span><%= auctionInfo.get("title") %> (<%= auctionInfo.get("brand") %>)</span>
+          <span><a href="item?itemId=<%= auctionInfo.get("item_id") %>" style="color: #667eea; text-decoration: none;"><%= auctionInfo.get("title") %></a> (<%= auctionInfo.get("brand") %>)</span>
         </div>
         <div class="info-row">
           <span>Condition</span>
@@ -432,7 +442,9 @@
           <ul>
             <% for (Map<String, Object> sim : similarAuctions) { %>
               <li>
-                Auction #<%= sim.get("auction_id") %> – <%= sim.get("title") %> (<%= sim.get("brand") %>)
+                <a href="Buyer_View_Auction_Page.jsp?auctionId=<%= sim.get("auction_id") %>" style="color: #667eea; text-decoration: none; font-weight: 600;">
+                  Auction #<%= sim.get("auction_id") %> – <%= sim.get("title") %> (<%= sim.get("brand") %>)
+                </a>
                 <br />
                 <span class="small-muted">
                   Condition: <%= sim.get("condition") %> · Starting at $<%= sim.get("starting_price") %>

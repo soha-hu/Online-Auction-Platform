@@ -11,6 +11,9 @@ public class ItemBean implements java.io.Serializable {
     private String condition;
     private String description;
     private String imagePath;
+    private java.math.BigDecimal minPrice;
+    private java.math.BigDecimal maxPrice;
+    private Boolean hasActiveAuction;
 
     public ItemBean() {}
   
@@ -37,5 +40,14 @@ public class ItemBean implements java.io.Serializable {
 
     public void setImagePath(String imagePath){this.imagePath = imagePath;};
     public String getImagePath(){return imagePath;};
+
+    public void setMinPrice(java.math.BigDecimal minPrice){this.minPrice = minPrice;};
+    public java.math.BigDecimal getMinPrice(){return minPrice;};
+
+    public void setMaxPrice(java.math.BigDecimal maxPrice){this.maxPrice = maxPrice;};
+    public java.math.BigDecimal getMaxPrice(){return maxPrice;};
+
+    public void setHasActiveAuction(Boolean hasActiveAuction){this.hasActiveAuction = hasActiveAuction;};
+    public Boolean getHasActiveAuction(){return hasActiveAuction;};
 
 }

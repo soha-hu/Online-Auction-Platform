@@ -1,6 +1,7 @@
 package com.techbarn.webapp;
 import java.io.IOException;
 import java.sql.*;
+import java.util.*;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
@@ -124,6 +125,33 @@ public class ItemServlet extends HttpServlet{
                 }
                 rs.close();
                 ps.close();
+                
+                // Query all auctions for this item
+                java.util.List<java.util.Map<String, Object>> auctions = new ArrayList<>();
+                String auctionQuery = "SELECT a.auction_id, a.start_time, a.end_time, a.status, " +
+                                     "a.starting_price, a.minimum_price, a.increment " +
+                                     "FROM Auction a " +
+                                     "WHERE a.item_id = ? " +
+                                     "ORDER BY a.start_time DESC";
+                
+                PreparedStatement psAuction = con.prepareStatement(auctionQuery);
+                psAuction.setInt(1, itemId);
+                ResultSet rsAuction = psAuction.executeQuery();
+                
+                while (rsAuction.next()) {
+                    java.util.Map<String, Object> auction = new HashMap<>();
+                    auction.put("auction_id", rsAuction.getInt("auction_id"));
+                    auction.put("start_time", rsAuction.getTimestamp("start_time"));
+                    auction.put("end_time", rsAuction.getTimestamp("end_time"));
+                    auction.put("status", rsAuction.getString("status"));
+                    auction.put("starting_price", rsAuction.getBigDecimal("starting_price"));
+                    auction.put("minimum_price", rsAuction.getBigDecimal("minimum_price"));
+                    auction.put("increment", rsAuction.getBigDecimal("increment"));
+                    auctions.add(auction);
+                }
+                
+                rsAuction.close();
+                psAuction.close();
                 ApplicationDB.closeConnection(con);
                 
                 if (item == null) {
@@ -133,6 +161,7 @@ public class ItemServlet extends HttpServlet{
                 }
                 
                 request.setAttribute("item", item);
+                request.setAttribute("auctions", auctions);
                 request.getRequestDispatcher("item.jsp").forward(request, response);
             }
 

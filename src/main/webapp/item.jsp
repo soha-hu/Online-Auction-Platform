@@ -100,6 +100,104 @@
         .item-additional-specs{
             padding-left: 24px;
         }*/
+        
+        .auctions-section {
+            margin-top: 40px;
+            padding-top: 40px;
+            border-top: 2px solid #e0e0e0;
+        }
+        
+        .auctions-section h3 {
+            font-size: 24px;
+            margin-bottom: 24px;
+            color: #2d3748;
+            font-weight: 700;
+        }
+        
+        .auctions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .auction-card {
+            background: #ffffff;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        
+        .auction-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            border-color: #667eea;
+        }
+        
+        .auction-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .auction-id {
+            font-size: 18px;
+            font-weight: 700;
+            color: #2d3748;
+        }
+        
+        .auction-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .auction-status.ACTIVE {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+        
+        .auction-status.ENDED {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+        
+        .auction-status.SCHEDULED {
+            background: #bee3f8;
+            color: #2c5282;
+        }
+        
+        .auction-price {
+            font-size: 20px;
+            font-weight: 700;
+            color: #667eea;
+            margin: 12px 0;
+        }
+        
+        .auction-dates {
+            font-size: 14px;
+            color: #718096;
+            line-height: 1.6;
+        }
+        
+        .auction-dates strong {
+            color: #4a5568;
+        }
+        
+        .no-auctions {
+            text-align: center;
+            padding: 40px;
+            color: #718096;
+            font-size: 16px;
+        }
     </style>
 </head>
 <body>
@@ -185,6 +283,62 @@
             }
         %>
     </div>
+    
+    <%
+        // Display auctions section
+        java.util.List<java.util.Map<String, Object>> auctions = (java.util.List<java.util.Map<String, Object>>) request.getAttribute("auctions");
+        if (item != null && auctions != null) {
+    %>
+    <div class="auctions-section">
+        <h3>Auctions for this Item</h3>
+        <%
+            if (auctions.isEmpty()) {
+        %>
+        <div class="no-auctions">
+            <p>No auctions found for this item.</p>
+        </div>
+        <%
+            } else {
+        %>
+        <div class="auctions-grid">
+            <%
+                for (java.util.Map<String, Object> auction : auctions) {
+                    Integer auctionId = (Integer) auction.get("auction_id");
+                    String status = (String) auction.get("status");
+                    java.sql.Timestamp startTime = (java.sql.Timestamp) auction.get("start_time");
+                    java.sql.Timestamp endTime = (java.sql.Timestamp) auction.get("end_time");
+                    java.math.BigDecimal startingPrice = (java.math.BigDecimal) auction.get("starting_price");
+                    
+                    // Format dates
+                    java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MMM dd, yyyy");
+                    java.text.SimpleDateFormat timeFormat = new java.text.SimpleDateFormat("hh:mm a");
+                    String startDateStr = dateFormat.format(startTime);
+                    String startTimeStr = timeFormat.format(startTime);
+                    String endDateStr = dateFormat.format(endTime);
+                    String endTimeStr = timeFormat.format(endTime);
+            %>
+            <a href="Buyer_View_Auction_Page.jsp?auctionId=<%= auctionId %>" class="auction-card">
+                <div class="auction-card-header">
+                    <span class="auction-id">Auction #<%= auctionId %></span>
+                    <span class="auction-status <%= status %>"><%= status %></span>
+                </div>
+                <div class="auction-price">$<%= startingPrice %></div>
+                <div class="auction-dates">
+                    <div><strong>Start:</strong> <%= startDateStr %> at <%= startTimeStr %></div>
+                    <div><strong>End:</strong> <%= endDateStr %> at <%= endTimeStr %></div>
+                </div>
+            </a>
+            <%
+                }
+            %>
+        </div>
+        <%
+            }
+        %>
+    </div>
+    <%
+        }
+    %>
     </div>
 </body>
 </html>

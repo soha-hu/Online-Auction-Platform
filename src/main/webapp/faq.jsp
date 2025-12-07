@@ -38,7 +38,7 @@
             background-position: center;
             background-repeat: no-repeat;
             background-attachment: fixed;
-            opacity: 0.8;
+            opacity: 1;
             pointer-events: none;
             z-index: 0;
         }

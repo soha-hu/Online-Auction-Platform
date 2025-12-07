@@ -58,11 +58,19 @@ public class CategoryServlet extends HttpServlet{
                         break;
                 }
 
-                String query = "SELECT * FROM Item i " +
+                String query = "SELECT i.*, " +
+                "COALESCE(MIN(b.amount), a.starting_price) as min_price, " +
+                "COALESCE(MAX(b.amount), a.starting_price) as max_price, " +
+                "a.starting_price, " +
+                "CASE WHEN a.auction_id IS NOT NULL THEN 1 ELSE 0 END as has_active_auction " +
+                "FROM Item i " +
                 "LEFT JOIN Phone p ON p.item_id = i.item_id " +
                 "LEFT JOIN TV t ON t.item_id = i.item_id " +
                 "LEFT JOIN Headphones h ON h.item_id = i.item_id " +
-                "WHERE i.category_id = ?";
+                "LEFT JOIN Auction a ON a.item_id = i.item_id AND a.status = 'active' " +
+                "LEFT JOIN Bid b ON b.auction_id = a.auction_id " +
+                "WHERE i.category_id = ? " +
+                "GROUP BY i.item_id, a.auction_id, a.starting_price";
 
                 PreparedStatement ps = con.prepareStatement(query);
                 ps.setInt(1, categoryId);
@@ -84,6 +92,21 @@ public class CategoryServlet extends HttpServlet{
                         imagePath = "Images/item_photos/z_stock/stock_phone.jpg";
                     }
                     item.setImagePath(imagePath);
+                    
+                    // Get price information from auction
+                    boolean hasActiveAuction = rs.getInt("has_active_auction") == 1;
+                    item.setHasActiveAuction(hasActiveAuction);
+                    
+                    if (hasActiveAuction) {
+                        // COALESCE in query handles case where no bids exist (uses starting_price)
+                        java.math.BigDecimal minPrice = rs.getBigDecimal("min_price");
+                        java.math.BigDecimal maxPrice = rs.getBigDecimal("max_price");
+                        item.setMinPrice(minPrice);
+                        item.setMaxPrice(maxPrice);
+                    } else {
+                        item.setMinPrice(null);
+                        item.setMaxPrice(null);
+                    }
                     
                     items.add(item);
                 }

@@ -66,7 +66,7 @@
         .card-phone img {
             width: 100%;
             height: 250px;
-            object-fit: cover;
+            object-fit: scale-down;
         }
 
         .card-tv img {
@@ -127,6 +127,28 @@
                 <p><%= item.getName() %></p>
                 <p style="color: #666; font-size: 14px;"><%= item.getBrand() %> - <%= item.getColor() %></p>
             </a>
+            <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #eee;">
+                <%
+                    Boolean hasActiveAuction = item.getHasActiveAuction();
+                    if (hasActiveAuction != null && hasActiveAuction) {
+                        java.math.BigDecimal minPrice = item.getMinPrice();
+                        java.math.BigDecimal maxPrice = item.getMaxPrice();
+                        if (minPrice != null && maxPrice != null) {
+                            if (minPrice.compareTo(maxPrice) == 0) {
+                                // Same price (no bids yet or only one bid)
+                                out.println("<p style='color: #2e7d32; font-weight: 600; font-size: 16px; margin: 5px 0;'>$" + minPrice + "</p>");
+                            } else {
+                                // Price range
+                                out.println("<p style='color: #2e7d32; font-weight: 600; font-size: 16px; margin: 5px 0;'>$" + minPrice + " - $" + maxPrice + "</p>");
+                            }
+                        } else {
+                            out.println("<p style='color: #2e7d32; font-weight: 600; font-size: 16px; margin: 5px 0;'>Price: N/A</p>");
+                        }
+                    } else {
+                        out.println("<p style='color: #d32f2f; font-weight: 600; font-size: 16px; margin: 5px 0;'>Out of Stock</p>");
+                    }
+                %>
+            </div>
         </div>
         <%
                 }

@@ -541,7 +541,7 @@ public String transformBoolean (String booleanInt){
                 <a href="item?itemId=<%= item.getId() %>">
                     <img src="<%= item.getImagePath() %>" alt="<%= item.getName() %>">
                     <p><%= item.getName() %></p>
-                    <p style="color: #666; font-size: 14px;"><%= item.getBrand() %> - <%= item.getColor() %></p>
+                    <p style="color: #666; font-size: 14px;"><%= item.getBrand() %> — <%= item.getColor() %></p>
                 </a>
             </div>
             <%
