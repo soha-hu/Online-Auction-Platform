@@ -204,6 +204,136 @@
       text-decoration: underline;
     }
 
+    .item-preview {
+      background: #ffffff;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .item-preview-image {
+      flex-shrink: 0;
+      width: 100%;
+      max-width: 200px;
+      height: 180px;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #f7fafc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+    }
+
+    .item-preview-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .item-preview-content {
+      width: 100%;
+      text-align: center;
+    }
+
+    .item-preview-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #2d3748;
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+
+    .item-preview-title a {
+      color: #2d3748;
+      text-decoration: none;
+    }
+
+    .item-preview-title a:hover {
+      color: #667eea;
+      text-decoration: underline;
+    }
+
+    .item-preview-specs {
+      font-size: 0.85rem;
+      color: #718096;
+      line-height: 1.6;
+      margin-bottom: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      align-items: center;
+    }
+
+    .item-preview-specs span {
+      display: block;
+    }
+
+    .item-preview-description {
+      font-size: 0.85rem;
+      color: #4a5568;
+      line-height: 1.5;
+      margin-top: 8px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .stock-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+
+    .stock-badge.in-stock {
+      background: #c6f6d5;
+      color: #22543d;
+    }
+
+    .stock-badge.out-of-stock {
+      background: #fed7d7;
+      color: #742a2a;
+    }
+
+    .view-full-item {
+      margin-top: 12px;
+      display: inline-block;
+      font-size: 0.85rem;
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .view-full-item:hover {
+      text-decoration: underline;
+      color: #764ba2;
+    }
+
+    .section-label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #4a5568;
+      margin: 20px 0 12px 0;
+    }
+
+    .divider-line {
+      width: 100%;
+      height: 1px;
+      background: #e2e8f0;
+      margin: 20px 0;
+    }
+
     @media (max-width: 900px) {
       body, html {
         align-items: flex-start;
@@ -244,7 +374,7 @@
                 "SELECT a.auction_id, a.status, a.start_time, a.end_time, " +
                 "       a.minimum_price, a.starting_price, a.increment, " +
                 "       i.item_id, i.title, i.brand, i.condition, i.color, " +
-                "       i.image_path, i.description, i.in_stock, " +
+                "       i.image_path, i.description, i.in_stock, i.category_id, " +
                 "       u.username AS seller_username " +
                 "FROM Auction a " +
                 "JOIN Item i ON a.item_id = i.item_id " +
@@ -269,6 +399,10 @@
                 auctionInfo.put("brand", rsAuction.getString("brand"));
                 auctionInfo.put("condition", rsAuction.getString("condition"));
                 auctionInfo.put("color", rsAuction.getString("color"));
+                auctionInfo.put("image_path", rsAuction.getString("image_path"));
+                auctionInfo.put("description", rsAuction.getString("description"));
+                auctionInfo.put("in_stock", rsAuction.getBoolean("in_stock"));
+                auctionInfo.put("category_id", rsAuction.getInt("category_id"));
                 auctionInfo.put("seller_username", rsAuction.getString("seller_username"));
             } else {
                 errorMessage = "No auction found with ID " + auctionIdParam;
@@ -343,6 +477,35 @@
 <div class="page-wrapper">
   <div class="left">
     <h1>View Auction</h1>
+    
+    <% if (auctionInfo != null && errorMessage == null) { %>
+      <div class="item-preview-image" style="margin-bottom: 20px;">
+        <%
+          String imagePath = (String) auctionInfo.get("image_path");
+          if (imagePath == null || imagePath.isEmpty()) {
+            // Default image based on category
+            Integer categoryId = (Integer) auctionInfo.get("category_id");
+            if (categoryId != null) {
+              if (categoryId == 1) {
+                imagePath = "Images/item_photos/z_stock/stock_phone.jpg";
+              } else if (categoryId == 2) {
+                imagePath = "Images/item_photos/z_stock/stock_tv.png";
+              } else if (categoryId == 3) {
+                imagePath = "Images/item_photos/z_stock/stock_headphones.jpg";
+              } else {
+                imagePath = "Images/item_photos/z_stock/stock_phone.jpg"; // fallback
+              }
+            } else {
+              imagePath = "Images/item_photos/z_stock/stock_phone.jpg"; // fallback
+            }
+          }
+        %>
+        <img src="<%= imagePath %>" alt="<%= auctionInfo.get("title") %>">
+      </div>
+      <div class="divider-line"></div>
+    <% } %>
+    
+    <div class="section-label">Auction Lookup</div>
     <p class="subtitle">Enter an auction ID to see details, pricing, and bid history.</p>
 
     <form method="get" action="Buyer_View_Auction_Page.jsp">
