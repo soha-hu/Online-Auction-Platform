@@ -2,7 +2,6 @@
     pageEncoding="UTF-8"%>
 <%@ page import="java.sql.*" %>
 <%@ page import="java.util.*" %>
-<%@ page import="com.techbarn.webapp.ApplicationDB" %>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -201,7 +200,13 @@
         ResultSet rsWinner = null;
 
         try {
-            con = ApplicationDB.getConnection();
+            Class.forName("com.mysql.cj.jdbc.Driver");
+
+            String url  = "jdbc:mysql://localhost:3306/tech_barn?useUnicode=true&useSSL=false";
+            String user = "root";
+            String pass = "password123";
+
+            con = DriverManager.getConnection(url, user, pass);
 
             int auctionIdInt = Integer.parseInt(auctionIdParam.trim());
 
@@ -259,7 +264,7 @@
             try { if (rsAuction != null) rsAuction.close(); } catch (Exception ignore) {}
             try { if (psWinner != null) psWinner.close(); } catch (Exception ignore) {}
             try { if (psAuction != null) psAuction.close(); } catch (Exception ignore) {}
-            try { if (con != null) ApplicationDB.closeConnection(con); } catch (Exception ignore) {}
+            try { if (con != null) con.close(); } catch (Exception ignore) {}
         }
     }
 %>
