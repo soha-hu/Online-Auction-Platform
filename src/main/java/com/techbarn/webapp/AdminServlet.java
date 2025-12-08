@@ -18,7 +18,6 @@ public class AdminServlet extends HttpServlet {
         if ("reports".equals(action)) {
             req.setAttribute("totalEarnings", ReportDAO.totalEarnings());
             req.setAttribute("byItem", ReportDAO.earningsByItem());
-            req.setAttribute("byItemType", ReportDAO.earningsByItemType());
             req.setAttribute("bySeller", ReportDAO.earningsBySeller());
             req.setAttribute("bestItems", ReportDAO.bestSellingItems());
             req.setAttribute("bestBuyers", ReportDAO.bestBuyers());

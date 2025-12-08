@@ -296,10 +296,11 @@ public class SearchServlet extends HttpServlet{
                 List<String> numericCategories = columnTypes.getOrDefault("numeric", new ArrayList<>());
 
                 StringBuilder queryBuilder = new StringBuilder(
-                    "SELECT * FROM Item i " +
+                    "SELECT DISTINCT i.*, p.*, t.*, h.*, a.starting_price FROM Item i " +
                     "LEFT JOIN Phone p ON p.item_id = i.item_id " +
                     "LEFT JOIN TV t ON t.item_id = i.item_id " +
-                    "LEFT JOIN Headphones h ON h.item_id = i.item_id "
+                    "LEFT JOIN Headphones h ON h.item_id = i.item_id " +
+                    "LEFT JOIN Auction a ON a.item_id = i.item_id "
                 );
                 
                 // Track if WHERE clause has been added (shared across all loops)
@@ -503,6 +504,56 @@ public class SearchServlet extends HttpServlet{
                     }
                 }
 
+                // Handle price range filtering
+                String minPriceStr = request.getParameter("min_price");
+                String maxPriceStr = request.getParameter("max_price");
+                List<Double> priceParams = new ArrayList<>();
+                boolean hasMinPrice = false;
+                boolean hasMaxPrice = false;
+                
+                if (minPriceStr != null && !minPriceStr.trim().isEmpty()) {
+                    try {
+                        Double.parseDouble(minPriceStr.trim());
+                        hasMinPrice = true;
+                    } catch (NumberFormatException e) {
+                        // Invalid number, ignore min price
+                    }
+                }
+                
+                if (maxPriceStr != null && !maxPriceStr.trim().isEmpty()) {
+                    try {
+                        Double.parseDouble(maxPriceStr.trim());
+                        hasMaxPrice = true;
+                    } catch (NumberFormatException e) {
+                        // Invalid number, ignore max price
+                    }
+                }
+                
+                if (hasMinPrice || hasMaxPrice) {
+                    if (hasWhere) {
+                        queryBuilder.append(" AND ");
+                    } else {
+                        queryBuilder.append(" WHERE ");
+                        hasWhere = true;
+                    }
+                    
+                    // Filter by starting_price from Auction table
+                    // Only include items that have an active auction
+                    queryBuilder.append("a.auction_id IS NOT NULL");
+                    
+                    if (hasMinPrice) {
+                        double minPrice = Double.parseDouble(minPriceStr.trim());
+                        queryBuilder.append(" AND a.starting_price >= ?");
+                        priceParams.add(minPrice);
+                    }
+                    
+                    if (hasMaxPrice) {
+                        double maxPrice = Double.parseDouble(maxPriceStr.trim());
+                        queryBuilder.append(" AND a.starting_price <= ?");
+                        priceParams.add(maxPrice);
+                    }
+                }
+
                 String query2 = queryBuilder.toString();
                 //how to do fuzzy matching? should we even bother?
                 //it should also use these to be exact matches for each selected category name = selectedcategoryvalue1 or selectedcategoryvalue2 
@@ -529,6 +580,10 @@ public class SearchServlet extends HttpServlet{
                 for (String inParam : inParams) {
                     ps2.setString(paramIndex++, inParam);
                 }
+                // 4. Set price range parameters
+                for (Double priceParam : priceParams) {
+                    ps2.setDouble(paramIndex++, priceParam);
+                }
                 
                 System.out.println ("SEARCH POST QUERY: " + ps2.toString());
                 ResultSet rs2 = ps2.executeQuery();
@@ -548,6 +603,12 @@ public class SearchServlet extends HttpServlet{
                         imagePath = "Images/item_photos/z_stock/stock_phone.jpg";
                     }
                     item.setImagePath(imagePath);
+                    
+                    // Get price from auction table for sorting
+                    java.math.BigDecimal startingPrice = rs2.getBigDecimal("starting_price");
+                    if (startingPrice != null) {
+                        item.setMinPrice(startingPrice);
+                    }
                     
                     items.add(item);
                 }

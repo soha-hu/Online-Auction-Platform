@@ -18,46 +18,73 @@
             overflow-x: hidden;
         }
         
+        .category-hero {
+            width: 100%;
+            height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            padding: 40px 20px;
+            overflow: hidden;
+        }
+
+        .category-hero::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image: url('Images/backgrounds/questions_banner.jpeg');
+            background-size: cover;
+            background-position: center;
+            filter: brightness(0.85) contrast(1.0);
+            z-index: 0;
+        }
+
+        .category-hero::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(0,0,0,0.05), rgba(0,0,0,0.02));
+            z-index: 1;
+        }
+
+        .category-hero-content {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .category-hero-header {
+            position: absolute;
+            top: 20px;
+            right: 40px;
+            z-index: 2;
+        }
+
+        .category-hero h1 {
+            color: white;
+            font-size: 3rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5);
+            background: none;
+            -webkit-background-clip: unset;
+            -webkit-text-fill-color: white;
+            background-clip: unset;
+            margin: 0;
+        }
+        
         .page-container {
             min-height: calc(100vh - 80px);
             position: relative;
             padding: 30px 20px;
-            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecef 50%, #f0f4f8 100%);
-            background-attachment: fixed;
-        }
-        
-        .page-container::before {
-            content: '';
-            position: fixed;
-            top: 70px;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-image: url('Images/backgrounds/questions_banner.jpeg');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-            opacity: 1;
-            pointer-events: none;
-            z-index: 0;
-        }
-        
-        .page-container::after {
-            content: '';
-            position: fixed;
-            top: 70px;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: 
-                linear-gradient(135deg, rgba(245, 247, 250, 0.1) 0%, rgba(232, 236, 239, 0.1) 50%, rgba(240, 244, 248, 0.1) 100%),
-                /*linear-gradient(135deg, rgba(198, 199, 202, 0.23) 0%, rgba(224, 226, 229, 0.23) 50%, rgba(202, 206, 209, 0.23) 100%),*/
-                radial-gradient(circle at 20% 50%, rgba(107, 144, 128, 0.05) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(107, 144, 128, 0.03) 0%, transparent 50%);
-                
-            pointer-events: none;
-            z-index: 0;
+            background: #f5f7fb;
         }
 
         .faq-container { 
@@ -66,51 +93,32 @@
             padding: 30px; 
             position: relative;
             z-index: 1;
-            background: rgba(245, 247, 251, 0.99);
+            background: rgba(245, 247, 251, 0.95);
             border-radius: 16px;
-            /*border: 1px solid rgba(230, 228, 220, 0.4);*/
         }
         
         .faq-container .faq-header { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            margin-bottom: 30px;
-            padding: 25px 30px;
-            /*background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);*/
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.99) 0%, rgba(248, 249, 250, 0.99) 100%);
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.8);
-        }
-        
-        h1 { 
-            color: #2d3748; 
-            font-size: 2.5rem;
-            font-weight: 700;
-            letter-spacing: -0.02em;
-            background: linear-gradient(135deg, #6b9080 0%, #4a6b5f 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            display: none;
         }
         
         .dashboard-btn { 
             padding: 12px 24px; 
-            background: linear-gradient(135deg, #6b9080 0%, #5a7a6a 100%); 
-            color: white; 
+            background: rgba(250, 250, 250, 0.95);
+            color: #6b9080; 
             text-decoration: none; 
             border-radius: 8px; 
             font-weight: 600; 
             font-size: 0.99rem;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 4px 12px rgba(107, 144, 128, 0.25);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border: 2px solid rgba(240, 240, 240, 0.8);
         }
         
         .dashboard-btn:hover { 
-            background: linear-gradient(135deg, #5a7a6a 0%, #4a6b5f 100%);
+            background: rgba(245, 245, 245, 1);
+            color: #5a7a6a;
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(107, 144, 128, 0.35);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
         }
         
         .dashboard-btn:active {
@@ -118,29 +126,36 @@
         }
         
         .search-section { 
-            margin: 30px 0; 
-            padding: 25px; 
-            background: rgba(255, 255, 255, 0.99); /*0.99 to 0.75*/
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.8);
+            width: 100%;
+            max-width: 800px;
+            margin: 0;
+            padding: 0;
+            background: transparent;
+            border-radius: 0;
+            box-shadow: none;
+            border: none;
         }
         
         .search-form { 
             display: flex; 
             gap: 12px; 
             align-items: stretch;
+            width: 100%;
+            background: rgba(250, 250, 250, 0.95);
+            padding: 14px;
+            border-radius: 999px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
         }
         
         .search-input { 
             flex: 1; 
             padding: 14px 20px; 
-            border: 2px solid #e2e8f0; 
-            border-radius: 8px; 
+            border: 2px solid rgba(240, 240, 240, 0.5); 
+            border-radius: 999px; 
             font-size: 1rem; 
             outline: none; 
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            background: #ffffff;
+            background: rgba(255, 255, 255, 0.98);
             color: #2d3748;
             font-weight: 400;
         }
@@ -150,8 +165,8 @@
         }
         
         .search-input:focus { 
-            border-color: #6b9080;
-            box-shadow: 0 0 0 4px rgba(107, 144, 128, 0.12), 0 2px 8px rgba(107, 144, 128, 0.1);
+            border-color: rgba(240, 240, 240, 0.9);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
             transform: translateY(-1px);
         }
         
@@ -160,12 +175,12 @@
             background: linear-gradient(135deg, #6b9080 0%, #5a7a6a 100%); 
             color: white; 
             border: none; 
-            border-radius: 8px; 
+            border-radius: 999px; 
             font-weight: 600; 
             font-size: 1rem;
             cursor: pointer; 
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 4px 12px rgba(107, 144, 128, 0.25);
+            box-shadow: 0 4px 12px rgba(107, 144, 128, 0.4);
         }
         
         .search-btn:hover { 
@@ -183,7 +198,7 @@
             background: linear-gradient(135deg, #718096 0%, #4a5568 100%); 
             color: white; 
             border: none; 
-            border-radius: 8px; 
+            border-radius: 999px; 
             font-weight: 600; 
             font-size: 1rem;
             cursor: pointer;
@@ -192,7 +207,7 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 12px rgba(113, 128, 150, 0.25);
+            box-shadow: 0 4px 12px rgba(113, 128, 150, 0.4);
         }
         
         .clear-btn:hover { 
@@ -204,14 +219,14 @@
         .ask-section { 
             margin: 30px 0; 
             padding: 30px; 
-            background: linear-gradient(135deg, rgba(232, 245, 233, 0.99) 0%, rgba(200, 230, 201, 0.99) 100%);  /*0.99 to 0.75*/
+            background: linear-gradient(135deg, rgba(220, 235, 223, 0.95) 0%, rgba(190, 210, 191, 0.95) 100%);
             border-radius: 12px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
             border: 1px solid rgba(255, 255, 255, 0.6);
         }
         
         .ask-section h2 { 
-            color: #2e7d32; 
+            color: #4a6b4f; 
             margin-bottom: 20px; 
             font-size: 1.5rem;
             font-weight: 700;
@@ -272,7 +287,7 @@
         
         .submit-btn { 
             padding: 12px 30px; 
-            background: linear-gradient(135deg, #4caf50 0%, #43a047 100%); 
+            background: linear-gradient(135deg, #5a8a5f 0%, #4a7a4f 100%); 
             color: white; 
             border: none; 
             border-radius: 8px; 
@@ -280,13 +295,13 @@
             font-size: 1rem;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+            box-shadow: 0 4px 12px rgba(90, 138, 95, 0.25);
         }
         
         .submit-btn:hover { 
-            background: linear-gradient(135deg, #43a047 0%, #388e3c 100%);
+            background: linear-gradient(135deg, #4a7a4f 0%, #3a6a3f 100%);
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+            box-shadow: 0 6px 20px rgba(90, 138, 95, 0.35);
         }
         
         .submit-btn:active {
@@ -300,24 +315,14 @@
         .questions-section h2 { 
             color: #2d3748; 
             margin-bottom: 25px; 
-            /*border-bottom: 3px solid #6b9080; 
-            padding-bottom: 12px;*/
             padding: 18px 24px;
-
-            background: rgba(255, 255, 255, 0.98);  /*0.98 to 0.75*/
+            background: rgba(250, 250, 250, 0.95);
             border-radius: 12px;
-
-
             font-size: 1.8rem;
             font-weight: 700;
             letter-spacing: -0.01em;
-            
-            background: rgba(255, 255, 255, 0.98);  /*0.98 to 0.75*/
-            border-radius: 12px;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.9);
-            border: 2px solid rgba(255, 255, 255, 0.9);
-            /*border: 2px solid rgba(107, 144, 128, 0.3);
-            border-left: 4px solid #6b9080;*/
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+            border: 2px solid rgba(240, 240, 240, 0.9);
             display: inline-block;
             width: 100%;
             box-sizing: border-box;
@@ -333,7 +338,7 @@
             margin-bottom: 20px; 
             border-radius: 12px; 
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            background: rgba(255, 255, 255, 0.99); /*0.99 to 0.75*/
+            background: rgba(250, 250, 250, 0.95);
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
         }
         
@@ -344,24 +349,22 @@
         }
         
         .question-card.answered { 
-            background: linear-gradient(135deg, rgba(241, 248, 244, 0.99) 0%, rgba(232, 245, 233, 0.99) 100%); /*0.99 to 0.75*/
-            /*border-color: #81c784;*/
-            box-shadow: 0 2px 8px rgba(129, 199, 132, 0.15);
+            background: linear-gradient(135deg, rgba(235, 242, 238, 0.95) 0%, rgba(225, 238, 228, 0.95) 100%);
+            box-shadow: 0 2px 8px rgba(100, 150, 110, 0.12);
         }
         
         .question-card.answered:hover {
-            box-shadow: 0 8px 30px rgba(0, 119, 6, 0.25), 0 2px 8px rgba(129, 199, 132, 0.15);
-            border-color: #103112;
+            box-shadow: 0 8px 30px rgba(80, 120, 90, 0.2), 0 2px 8px rgba(100, 150, 110, 0.12);
+            border-color: #5a7a5f;
         }
         
         .question-card.unanswered { 
-            background: linear-gradient(135deg, rgba(255, 254, 247, 0.99) 0%, rgba(255, 249, 230, 0.99) 100%); /*0.99 to 0.75*/
-            /*border-color: #ffb74d;*/
-            box-shadow: 0 2px 8px rgba(255, 183, 77, 0.15);
+            background: linear-gradient(135deg, rgba(250, 248, 242, 0.95) 0%, rgba(245, 240, 225, 0.95) 100%);
+            box-shadow: 0 2px 8px rgba(200, 170, 120, 0.12);
         }
         
         .question-card.unanswered:hover {
-            box-shadow: 0 8px 30px rgba(255, 183, 77, 0.25), 0 2px 8px rgba(255, 183, 77, 0.15);
+            box-shadow: 0 8px 30px rgba(200, 170, 120, 0.2), 0 2px 8px rgba(200, 170, 120, 0.12);
         }
         
         .question-title { 
@@ -393,12 +396,12 @@
         }
         
         .status-answered { 
-            background: linear-gradient(135deg, #4caf50 0%, #43a047 100%); 
+            background: linear-gradient(135deg, #5a8a5f 0%, #4a7a4f 100%); 
             color: white; 
         }
         
         .status-open { 
-            background: linear-gradient(135deg, #ff9800 0%, #fb8c00 100%); 
+            background: linear-gradient(135deg, #d68910 0%, #c67a0f 100%); 
             color: white; 
         }
         
@@ -413,7 +416,7 @@
         .question-answer { 
             margin-top: 15px; 
             padding: 18px; 
-            background: rgba(255, 255, 255, 0.7); /*0.7 to 0.6*/
+            background: rgba(245, 245, 245, 0.8);
             border-left: 4px solid #6b9080; 
             border-radius: 6px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
@@ -444,19 +447,19 @@
             padding: 60px 20px; 
             color: #718096;
             font-size: 1.1rem;
-            background: rgba(255, 255, 255, 0.99); /*0.99 to 0.75*/
+            background: rgba(250, 250, 250, 0.95);
             border-radius: 12px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
         }
         
         .login-prompt { 
-            background: linear-gradient(135deg, rgba(255, 243, 205, 0.99) 0%, rgba(255, 235, 179, 0.99) 100%); /*0.99 to 0.75*/
+            background: linear-gradient(135deg, rgba(245, 235, 200, 0.95) 0%, rgba(240, 225, 170, 0.95) 100%);
             padding: 18px; 
             border-radius: 8px; 
-            border-left: 4px solid #ffc107; 
+            border-left: 4px solid #d4a017; 
             margin-bottom: 20px;
             color: #2d3748;
-            box-shadow: 0 2px 8px rgba(255, 193, 7, 0.15);
+            box-shadow: 0 2px 8px rgba(212, 160, 23, 0.12);
         }
         
         .login-link { 
@@ -474,10 +477,10 @@
         .filter-section {
             margin: 30px 0;
             padding: 20px 25px;
-            background: rgba(255, 255, 255, 0.99);/*0.99 to 0.75*/
+            background: rgba(250, 250, 250, 0.95);
             border-radius: 12px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(240, 240, 240, 0.8);
         }
         
         .filter-label {
@@ -524,14 +527,23 @@
         }
         
         @media (max-width: 768px) {
-            .faq-container .faq-header {
-                flex-direction: column;
-                gap: 16px;
-                align-items: flex-start;
+            .category-hero {
+                height: 250px;
+                padding: 20px;
             }
-            
-            h1 {
-                font-size: 1.75rem;
+
+            .category-hero h1 {
+                font-size: 2rem;
+            }
+
+            .category-hero-header {
+                top: 15px;
+                right: 15px;
+            }
+
+            .dashboard-btn {
+                padding: 10px 18px;
+                font-size: 0.9rem;
             }
             
             .search-form {
@@ -557,10 +569,8 @@
     String role = (String) session.getAttribute("role");
     boolean isRepOrAdmin = "rep".equals(role) || "admin".equals(role);
 %>
-<div class ="page-container">
-<div class="faq-container">
-    <div class="faq-header">
-        <h1>FAQ / Customer Questions</h1>
+<div class="category-hero">
+    <div class="category-hero-header">
         <% if (isRepOrAdmin) { %>
             <a href="<%=request.getContextPath()%>/<%="rep".equals(role) ? "custrep" : "admin"%>" class="dashboard-btn">
                 Back to Dashboard
@@ -571,17 +581,22 @@
             </a>
         <% } %>
     </div>
-    
-    <!-- Search Section -->
-    <div class="search-section">
-        <form method="get" action="<%=request.getContextPath()%>/faq" class="search-form">
-            <input type="text" name="q" class="search-input" placeholder="Search questions by keywords..." value="<%=request.getParameter("q") != null ? request.getParameter("q") : ""%>" />
-            <button type="submit" class="search-btn">Search</button>
-            <% if (request.getParameter("q") != null && !request.getParameter("q").isEmpty()) { %>
-                <a href="<%=request.getContextPath()%>/faq" class="clear-btn">Clear</a>
-            <% } %>
-        </form>
+    <div class="category-hero-content">
+        <h1>FAQ / Customer Questions</h1>
+        <!-- Search Section -->
+        <div class="search-section">
+            <form method="get" action="<%=request.getContextPath()%>/faq" class="search-form">
+                <input type="text" name="q" class="search-input" placeholder="Search questions by keywords..." value="<%=request.getParameter("q") != null ? request.getParameter("q") : ""%>" />
+                <button type="submit" class="search-btn">Search</button>
+                <% if (request.getParameter("q") != null && !request.getParameter("q").isEmpty()) { %>
+                    <a href="<%=request.getContextPath()%>/faq" class="clear-btn">Clear</a>
+                <% } %>
+            </form>
+        </div>
     </div>
+</div>
+<div class ="page-container">
+<div class="faq-container">
 
     <% if (isRepOrAdmin) { %>
     <!-- Filter Section for Reps/Admins -->

@@ -328,6 +328,10 @@ public String transformBoolean (String booleanInt){
             min-height: 300px;
         }
 
+        .results.hidden {
+            display: none;
+        }
+
         .results-header {
             display: flex;
             justify-content: space-between;
@@ -356,6 +360,7 @@ public String transformBoolean (String booleanInt){
             padding: 5px 8px;
             border-radius: 999px;
             border: 1px solid #d1d5db;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -407,6 +412,27 @@ public String transformBoolean (String booleanInt){
                         selectedCategories = new HashMap<>();
                     }
                 %>
+                <!-- Price Range -->
+                <div class="filters-section-title">Price Range</div>
+                <div class="filter-group">
+                    <span class="filter-title">Price</span>
+                    <%
+                        String minPrice = request.getParameter("min_price");
+                        String maxPrice = request.getParameter("max_price");
+                        if (minPrice == null) minPrice = "";
+                        if (maxPrice == null) maxPrice = "";
+                    %>
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <input type="number" name="min_price" placeholder="Min Price ($)" 
+                                value="<%= minPrice %>" 
+                                min="0" step="0.01"
+                                style="padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 13px; width: 100%;">
+                        <input type="number" name="max_price" placeholder="Max Price ($)" 
+                                value="<%= maxPrice %>" 
+                                min="0" step="0.01"
+                                style="padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 13px; width: 100%;">
+                    </div>
+                </div>
                 
                 <!-- General section -->
                 <div class="filters-section-title">General</div>
@@ -499,22 +525,23 @@ public String transformBoolean (String booleanInt){
                 <% } 
                 }
                 %>
-                
                     <button type="submit" class="apply-button">Apply Filters</button>
                 </div>
             </form>
         </aside>
         <!-- Results Grid (right)-->
-        <div class="results">
+        <%
+            Boolean searched = (Boolean) request.getAttribute("searched");
+            ArrayList<ItemBean> items = (ArrayList<ItemBean>) request.getAttribute("items");
+            String q = request.getParameter("q");
+            int count = (items != null) ? items.size() : 0;
+            String resultsClass = (searched != null && searched) ? "" : "hidden";
+        %>
+        <div class="results <%= resultsClass %>">
         <div class="results-header">
             <div>
                 <h2>Search results</h2>
                 <p class="results-subtitle">
-                    <% 
-                        String q = request.getParameter("q");
-                        ArrayList<ItemBean> items = (ArrayList<ItemBean>) request.getAttribute("items");
-                        int count = (items != null) ? items.size() : 0;
-                    %>
                     <%= count %> item(s) found
                     <% if (q != null && !q.isEmpty()) { %>
                         for "<%= q %>"
@@ -524,20 +551,39 @@ public String transformBoolean (String booleanInt){
 
             <div class="sort">
                 <label for="sortBy">Sort by</label>
-                <select id="sortBy" name="sortBy" form="sortForm">
+                <select id="sortBy" name="sortBy">
                     <option value="relevance">Alphabetical: A-Z</option>
+                    <option value="nameDesc">Alphabetical: Z-A</option>
+                    <option value="typeAsc">Type: A-Z</option>
+                    <option value="typeDesc">Type: Z-A</option>
                     <option value="priceAsc">Price: Low to High</option>
                     <option value="priceDesc">Price: High to Low</option>
                 </select>
             </div>
         </div>
 
-        <div class="item-grid">
+        <div class="item-grid" id="itemGrid">
             <%
                 if (items != null && !items.isEmpty()) {
                     for (ItemBean item : items) {
+                        // Infer item type from image path
+                        String imagePath = item.getImagePath() != null ? item.getImagePath() : "";
+                        String itemType = "Other";
+                        if (imagePath.contains("/phones/")) {
+                            itemType = "Phone";
+                        } else if (imagePath.contains("/tvs/")) {
+                            itemType = "TV";
+                        } else if (imagePath.contains("/headphones/")) {
+                            itemType = "Headphones";
+                        }
+                        
+                        // Get price for sorting (use minPrice if available, otherwise 0)
+                        String priceValue = "0";
+                        if (item.getMinPrice() != null) {
+                            priceValue = item.getMinPrice().toString();
+                        }
             %>
-            <div class="item-card">
+            <div class="item-card" data-type="<%= itemType %>" data-price="<%= priceValue %>" data-name="<%= item.getName() != null ? item.getName().toLowerCase() : "" %>">
                 <a href="item?itemId=<%= item.getId() %>">
                     <img src="<%= item.getImagePath() %>" alt="<%= item.getName() %>">
                     <p><%= item.getName() %></p>
@@ -546,7 +592,7 @@ public String transformBoolean (String booleanInt){
             </div>
             <%
                     }
-                } else {
+                } else if (searched != null && searched) {
             %>
             <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #6b7280;">
                 <p>No items found matching the search criteria.</p>
@@ -557,5 +603,69 @@ public String transformBoolean (String booleanInt){
     </div>
     </div>
 </div>
+
+<script>
+    // Sorting functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const sortSelect = document.getElementById('sortBy');
+        const itemGrid = document.getElementById('itemGrid');
+        
+        if (sortSelect && itemGrid) {
+            sortSelect.addEventListener('change', function() {
+                const sortValue = this.value;
+                const items = Array.from(itemGrid.querySelectorAll('.item-card'));
+                
+                items.sort(function(a, b) {
+                    switch(sortValue) {
+                        case 'relevance':
+                            // Alphabetical by name A-Z
+                            const nameA = a.getAttribute('data-name') || '';
+                            const nameB = b.getAttribute('data-name') || '';
+                            return nameA.localeCompare(nameB);
+                            
+                        case 'nameDesc':
+                            // Alphabetical by name Z-A
+                            const nameA2 = a.getAttribute('data-name') || '';
+                            const nameB2 = b.getAttribute('data-name') || '';
+                            return nameB2.localeCompare(nameA2);
+                            
+                        case 'typeAsc':
+                            // Type A-Z
+                            const typeA = a.getAttribute('data-type') || '';
+                            const typeB = b.getAttribute('data-type') || '';
+                            return typeA.localeCompare(typeB);
+                            
+                        case 'typeDesc':
+                            // Type Z-A
+                            const typeA2 = a.getAttribute('data-type') || '';
+                            const typeB2 = b.getAttribute('data-type') || '';
+                            return typeB2.localeCompare(typeA2);
+                            
+                        case 'priceAsc':
+                            // Price Low to High
+                            const priceA = parseFloat(a.getAttribute('data-price')) || 0;
+                            const priceB = parseFloat(b.getAttribute('data-price')) || 0;
+                            return priceA - priceB;
+                            
+                        case 'priceDesc':
+                            // Price High to Low
+                            const priceA2 = parseFloat(a.getAttribute('data-price')) || 0;
+                            const priceB2 = parseFloat(b.getAttribute('data-price')) || 0;
+                            return priceB2 - priceA2;
+                            
+                        default:
+                            return 0;
+                    }
+                });
+                
+                // Clear the grid and re-append sorted items
+                itemGrid.innerHTML = '';
+                items.forEach(function(item) {
+                    itemGrid.appendChild(item);
+                });
+            });
+        }
+    });
+</script>
 </body>
 </html>

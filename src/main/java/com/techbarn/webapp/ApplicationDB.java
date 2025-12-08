@@ -27,12 +27,13 @@ public class ApplicationDB {
 		
 		try {
 			//Create a connection to your DB
-			connection = DriverManager.getConnection(connectionUrl, "root", "2412827@Sai");
+			connection = DriverManager.getConnection(connectionUrl, "root", "password123");
 			if (connection == null) {
 				throw new SQLException("Failed to make connection!");
 			}
 		} catch (SQLException e) {
-			throw new SQLException("Failed to connect to database.", e);
+			// Preserve the original error message to help diagnose the issue
+			throw new SQLException("Failed to connect to database: " + e.getMessage(), e);
 		}
 		
 		return connection;

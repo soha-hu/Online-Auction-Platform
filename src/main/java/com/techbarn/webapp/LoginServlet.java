@@ -135,7 +135,12 @@ public class LoginServlet extends HttpServlet {
 
         } catch (Exception e) {
             e.printStackTrace();
-            request.setAttribute("errorMessage", "Connection failed: " + e.getMessage());
+            // Show the full error message including the underlying SQLException
+            String errorMsg = "Connection failed: " + e.getMessage();
+            if (e.getCause() != null) {
+                errorMsg += " (" + e.getCause().getMessage() + ")";
+            }
+            request.setAttribute("errorMessage", errorMsg);
             request.getRequestDispatcher("login.jsp").forward(request, response);
         }
     }
