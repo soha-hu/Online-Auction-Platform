@@ -1,4 +1,4 @@
-# Tech Barn - Final Project 336
+# Tech Barn!
 
 A Java web application built with Apache Tomcat, Java Servlets, JSP, and MySQL. This is a technology marketplace platform that supports user authentication with buyer and seller functionality.
 
@@ -207,49 +207,4 @@ The main `user` table includes:
    - Navigate to the login page
    - Use credentials from `sql/seed.sql` or create a new user
 
-## 🐛 Troubleshooting
 
-### Common Issues
-
-1. **Database Connection Failed**
-   - Verify MySQL is running
-   - Check database credentials in `ApplicationDB.java`
-   - Ensure the database `tech_barn` exists
-
-2. **ClassNotFoundException for MySQL Driver**
-   - Verify `mysql-connector-java-5.1.49-bin.jar` is in `WEB-INF/lib/`
-   - Check that the JAR is included in the WAR file
-
-3. **404 Error on Pages**
-   - Verify the context path matches your deployment
-   - Check `web.xml` configuration
-   - Ensure JSP files are in the correct directory
-
-4. **Session Issues**
-   - Clear browser cookies
-   - Check Tomcat session timeout settings
-
-## 📚 Additional Resources
-
-- [Apache Tomcat Documentation](https://tomcat.apache.org/tomcat-9.0-doc/)
-- [Java Servlet Specification](https://javaee.github.io/servlet-spec/)
-- [JSP Tutorial](https://www.oracle.com/java/technologies/jspt.html)
-- [MySQL Documentation](https://dev.mysql.com/doc/)
-
-## 📄 License
-
-This project is licensed under the MIT License.
-
-## 👥 Authors
-
-Final Project 336 - Database Systems Course
-
----
-
-**Note**: This is a development/educational project. For production use, consider implementing:
-- Password hashing (bcrypt, Argon2)
-- SQL injection prevention (already using PreparedStatements - good!)
-- HTTPS/SSL encryption
-- Input validation and sanitization
-- Error logging and monitoring
-- Security headers and CSRF protection
